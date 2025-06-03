@@ -1,6 +1,28 @@
-<nav>
-	<ul>
-		<li><a href="/">Home</a></li>
-		<!-- Add more links as needed -->
-	</ul>
- </nav>
+<aside class="sidebar">
+   <div class="sidebar-header">
+      <a href="/" class="logo">
+         <img src="/www/img/Logo_wBackground.png" alt="Logo" class="logo-image">
+      </a>
+   </div>
+   <nav class="sidebar-nav">
+      <ul>
+         <li>
+            <a href="/" class="<%= activePath === '/' ? 'active' : '' %>">Home</a>
+         </li>
+         <li>
+            <a href="/browse" class="<%= activePath === '/browse' ? 'active' : '' %>">Browse</a>
+         </li>
+         <li>
+            <a href="/spotlight" class="<%= activePath === '/spotlight' ? 'active' : '' %>">Spotlight</a>
+         </li>
+         <li>
+            <a href="/contact" class="<%= activePath === '/contact' ? 'active' : '' %>">Contact</a>
+         </li>
+      </ul>
+   </nav>
+   <div class="sidebar-profile">
+      <a href="/profile" class="profile-link<%= activePath === '/profile' ? ' active' : '' %>">
+         <img src="/www/img/Profile.png" alt="Profile" class="profile-icon">
+      </a>
+   </div>
+</aside>
