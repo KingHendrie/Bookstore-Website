@@ -1,6 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const path = require('path');
+const fs = require('fs');
 const ejs = require('ejs');
 const app = express();
 
@@ -15,13 +16,24 @@ app.use((req, res, next) => {
   next();
 });
 
-// Render with layout, and catch errors to show custom 500
+// Render with layout, treating missing partials as 404s and rendering 500s for other errors
 async function renderWithLayout(res, page, options = {}) {
+  const pagePath = path.join(__dirname, 'views/pages', `${page}.ejs`);
   try {
-    const body = await ejs.renderFile(
-      path.join(__dirname, 'views/pages', `${page}.ejs`),
-      options
-    );
+    if (!fs.existsSync(pagePath)) {
+      // If the page partial does not exist, render 404
+      res.status(404);
+      const body = await ejs.renderFile(
+        path.join(__dirname, 'views/pages', '404.ejs'),
+        options
+      );
+      return res.render('layout', {
+        ...options,
+        title: 'Page Not Found',
+        body
+      });
+    }
+    const body = await ejs.renderFile(pagePath, options);
     res.render('layout', {
       ...options,
       body
