@@ -10,18 +10,18 @@
             <a href="/" class="<%= activePath === '/' ? 'active' : '' %>">Home</a>
          </li>
          <li>
-            <a href="/browse" class="<%= activePath === '/browse' ? 'active' : '' %>">Browse</a>
+            <a href="/browse" class="<%= activePath.startsWith('/browse') ? 'active' : '' %>">Browse</a>
          </li>
          <li>
-            <a href="/spotlight" class="<%= activePath === '/spotlight' ? 'active' : '' %>">Spotlight</a>
+            <a href="/spotlight" class="<%= activePath.startsWith('/spotlight') ? 'active' : '' %>">Spotlight</a>
          </li>
          <li>
-            <a href="/contact" class="<%= activePath === '/contact' ? 'active' : '' %>">Contact</a>
+            <a href="/contact" class="<%= activePath.startsWith('/contact') ? 'active' : '' %>">Contact</a>
          </li>
       </ul>
    </nav>
    <div class="sidebar-profile">
-      <a href="/profile" class="profile-link<%= activePath === '/profile' ? ' active' : '' %>">
+      <a href="/profile" class="profile-link<%= activePath.startsWith('/profile') ? ' active' : '' %>">
          <img src="/www/img/Profile.png" alt="Profile" class="profile-icon">
       </a>
    </div>
