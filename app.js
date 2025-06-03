@@ -16,12 +16,16 @@ app.use((req, res, next) => {
   next();
 });
 
-// Render with layout, treating missing partials as 404s and rendering 500s for other errors
+// Helper: Capitalize for page titles
+function capitalize(str) {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+// Render with layout, handling 404 and 500
 async function renderWithLayout(res, page, options = {}) {
   const pagePath = path.join(__dirname, 'views/pages', `${page}.ejs`);
   try {
     if (!fs.existsSync(pagePath)) {
-      // If the page partial does not exist, render 404
       res.status(404);
       const body = await ejs.renderFile(
         path.join(__dirname, 'views/pages', '404.ejs'),
@@ -39,7 +43,6 @@ async function renderWithLayout(res, page, options = {}) {
       body
     });
   } catch (err) {
-    // If there's an error rendering the page, show the 500 error page
     res.status(500);
     try {
       const errorBody = await ejs.renderFile(
@@ -52,36 +55,35 @@ async function renderWithLayout(res, page, options = {}) {
         body: errorBody
       });
     } catch (errorPageErr) {
-      // As a last resort, send plain text
       res.send('A server error occurred.');
     }
   }
 }
 
-// ----- Main Page Routes -----
-app.get('/', (req, res) => {
-  renderWithLayout(res, 'home', { title: 'Home' });
-});
-app.get('/browse', (req, res) => {
-  renderWithLayout(res, 'browse', { title: 'Browse' });
-});
-app.get('/spotlight', (req, res) => {
-  renderWithLayout(res, 'spotlight', { title: 'Spotlight' });
-});
-app.get('/contact', (req, res) => {
-  renderWithLayout(res, 'contact', { title: 'Contact' });
-});
-app.get('/profile', (req, res) => {
-  renderWithLayout(res, 'profile', { title: 'Profile' });
+// Catch-all route for generic rendering based on URL path
+app.get('*', (req, res, next) => {
+  try {
+    const segments = req.path.split('/').filter(Boolean);
+    const page = segments[0] || 'home';
+    const filter = segments.slice(1).join('/') || null;
+
+    renderWithLayout(res, page, {
+      title: capitalize(page),
+      filter
+    });
+  } catch (err) {
+    console.error('Error in catch-all route:', err);
+    next(err);
+  }
 });
 
-// ----- 404 Custom Error Handler -----
-app.use((req, res, next) => {
+// 404 handler (fallback — rarely reached if using generic route)
+app.use((req, res) => {
   res.status(404);
   renderWithLayout(res, '404', { title: 'Page Not Found' });
 });
 
-// ----- 500 Custom Error Handler -----
+// 500 handler
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500);
