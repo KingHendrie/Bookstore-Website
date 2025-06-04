@@ -9,34 +9,29 @@ This guide will help you set up a simple Node.js project using [Express.js](http
 
 ## Setup Instructions
 
-1. **Initialize a new Node.js project**
+1. **Clone the repository**
 
    ```bash
-   npm init -y
+   git clone https://github.com/YOUR_USERNAME/YOUR_REPO.git
+   cd YOUR_REPO
    ```
 
-2. **Install Express.js**
+2. **Install dependencies**
 
    ```bash
-   npm install express
+   npm install
    ```
 
-3. **Create your main app file**
+3. **Start the application**
 
    ```bash
-   touch app.js
+   npm start
    ```
 
-4. **Install dotenv for environment variable management**
+4. **Environment Variables**
 
    ```bash
-   npm install dotenv
-   ```
-
-5. **Install EJS for templating**
-
-   ```bash
-   npm install ejs
+   cp .env.example .env
    ```
 
 ## Starting the Server

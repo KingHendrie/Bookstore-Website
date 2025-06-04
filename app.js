@@ -3,6 +3,8 @@ const express = require('express');
 const path = require('path');
 const fs = require('fs');
 const ejs = require('ejs');
+const cookieParser = require('cookie-parser');
+const session = require('express-session');
 const db = require('./db');
 const logger = require('./logger');
 const apiRoutes = require('./api');
@@ -11,6 +13,13 @@ const app = express();
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 app.use(express.static('public'));
+app.use(cookieParser(process.env.APP_Secret));
+app.use(session({
+  secret: process.env.APP_Secret,
+  resave: false,
+  saveUninitialized: false,
+  cookie: { secure: false } // Set secure: true if using HTTPS
+}));
 app.use('/api', apiRoutes);
 
 // Middleware: Make activePath available to all views for nav highlighting
