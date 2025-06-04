@@ -74,6 +74,84 @@ html, body {
 }
 
 /*=========================
+  Banner
+=========================*/
+.banner {
+   width: 100%;
+   padding-bottom: 20px;
+   display: flex;
+   justify-content: center;
+   align-items: center;
+}
+
+.banner-content {
+   text-align: center;
+}
+
+.banner-image {
+   max-width: 100%;
+   height: auto;
+   border-radius: 8px;
+   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/*=========================
+  Contact
+=========================*/
+#contactForm {
+   width: 100%;
+   max-width: 600px;
+   margin: 0 auto;
+   padding: 20px;
+   background: var(--color-tertiary);
+   border-radius: 8px;
+   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+#contactForm label {
+   display: block;
+   margin-bottom: 8px;
+   font-weight: 700;
+   color: var(--color-text);
+}
+
+#contactForm input[type="email"],
+#contactForm input[type="text"],
+#contactForm textarea {
+   width: 100%;
+   padding: 10px;
+   margin-bottom: 16px;
+   border: 1px solid var(--color-primary);
+   border-radius: 4px;
+   font-size: 1em;
+   font-family: 'Roboto', Arial, sans-serif;
+   background: var(--color-actions);
+   color: var(--color-text);
+}
+
+#contactForm textarea {
+   resize: vertical;
+   min-height: 120px;
+}
+
+#contactForm button {
+   background: var(--color-accent);
+   color: var(--color-tertiary);
+   border: none;
+   border-radius: 4px;
+   padding: 10px 22px;
+   font-size: 1em;
+   font-weight: 700;
+   cursor: pointer;
+   transition: background 0.2s, color 0.2s;
+}
+
+#contactForm button:hover {
+   background: var(--color-secondary);
+   color: var(--color-text);
+}
+
+/*=========================
   Footer
 =========================*/
 footer {

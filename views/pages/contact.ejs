@@ -1,0 +1,14 @@
+<form id="contactForm" onsubmit="event.preventDefault(); sendEmailFromFrontend();">
+	<label for="email">Email:</label>
+	<input type="email" id="email" name="email" required>
+	<br>
+	<label for="subject">Subject:</label>
+	<input type="text" id="subject" name="subject" required>
+	<br>
+	<label for="message">Message:</label>
+	<textarea id="message" name="message" required></textarea>
+	<br>
+	<button type="submit">Send Email</button>
+</form>
+
+<script src="/wwwroot/js/email.js"></script>

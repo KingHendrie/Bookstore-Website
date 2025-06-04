@@ -5,11 +5,13 @@ const fs = require('fs');
 const ejs = require('ejs');
 const db = require('./db');
 const logger = require('./logger');
+const apiRoutes = require('./api');
 const app = express();
 
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 app.use(express.static('public'));
+app.use('/api', apiRoutes);
 
 // Middleware: Make activePath available to all views for nav highlighting
 app.use((req, res, next) => {
@@ -139,5 +141,6 @@ app.use((err, req, res, next) => {
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
+  console.log(`Server is running on http://localhost:${PORT}`);
   logger.info(`Server is running on http://localhost:${PORT}`);
 });
