@@ -25,7 +25,7 @@ This guide will help you set up a simple Node.js project using [Express.js](http
 3. **Start the application**
 
    ```bash
-   npm start
+   node app.js
    ```
 
 4. **Environment Variables**
