@@ -156,8 +156,9 @@ html, body {
 =========================*/
 footer {
    margin-top: auto;
-   padding: 18px 0 0 0;
+   padding: 18px 0;
    border-top: 1px solid var(--color-primary);
+   border-radius: 8px;
    color: var(--color-text);
    font-size: 0.95em;
    text-align: center;
