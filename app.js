@@ -14,12 +14,12 @@ app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 app.use(express.static('public'));
 app.use(cookieParser(process.env.APP_Secret));
-app.use(session({
-  secret: process.env.APP_Secret,
-  resave: false,
-  saveUninitialized: false,
-  cookie: { secure: false } // Set secure: true if using HTTPS
-}));
+//app.use(session({
+//  secret: process.env.APP_Secret,
+//  resave: false,
+//  saveUninitialized: false,
+//  cookie: { secure: false } // Set secure: true if using HTTPS
+//}));
 app.use('/api', apiRoutes);
 
 // Middleware: Make activePath available to all views for nav highlighting
@@ -47,7 +47,10 @@ async function checkDbConnection() {
 
 // Render with layout, handling 404 and 500
 async function renderWithLayout(res, page, options = {}) {
-  // Check DB connection first if requested
+  // Ensure activePath is available
+  options.activePath = res.locals.activePath || options.activePath || '/';
+
+  // Check DB connection if required
   if (options.requireDb) {
     const dbStatus = await checkDbConnection();
     if (dbStatus !== true) {
@@ -85,6 +88,7 @@ async function renderWithLayout(res, page, options = {}) {
         body
       });
     }
+
     const body = await ejs.renderFile(pagePath, options);
     logger.info(`Rendering page: ${page}`);
     res.render('layout', {
@@ -123,10 +127,13 @@ app.get('*', (req, res, next) => {
     const segments = req.path.split('/').filter(Boolean);
     const page = segments[0] || 'home';
     const filter = segments.slice(1).join('/') || null;
-    logger.info(`Requested page: ${page} Filter: ${filter}`);
+    
+    res.locals.activePath = req.path; // Ensure activePath is set
+    
     renderWithLayout(res, page, {
       title: capitalize(page),
-      filter
+      filter,
+      activePath: req.path // Explicitly pass activePath
     });
   } catch (err) {
     logger.error('Error in catch-all route: ' + err.stack);
