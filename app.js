@@ -33,14 +33,13 @@ function capitalize(str) {
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
-// Helper: Check DB connection
+// Helper: Check Database Connection
 async function checkDbConnection() {
   try {
-    await db.raw('SELECT 1');
-    logger.info('Successfully connected to MySQL database.');
+    await db.checkConnection();
     return true;
   } catch (err) {
-    logger.error('Database connection error: ' + err.stack);
+    logger.error('Database error:', err);
     return err;
   }
 }

@@ -42,6 +42,20 @@ To start your Express server, run:
 node app.js
 ```
 
+## Running migrations
+
+To run the migrations, run:
+
+```bash
+npx knex migrate:latest
+```
+
+To rollback a migration, run:
+
+```bash
+npx knex migrate:rollback
+```
+
 ## Next Steps
 
 - Set up your `app.js` with a basic Express server.
