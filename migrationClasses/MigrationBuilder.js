@@ -16,6 +16,9 @@ class MigrationBuilder {
 			else if (col.type === 'text') table.text(col.name);
 			else if (col.type === 'boolean') table.boolean(col.name);
 			else if (col.type === 'timestamp') table.timestamps(true, true);
+			else if (col.type === 'date') table.date(col.name);
+			else if (col.type === 'datetime') table.dateTime(col.name);
+			else if (col.type === 'enum') table.enu(col.name, col.values);
 			else if (col.type === 'foreign') {
 				table.integer(col.name).unsigned();
 				table.foreign(col.name).references(col.references).onDelete(col.onDelete || 'CASCADE');
