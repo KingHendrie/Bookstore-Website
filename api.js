@@ -3,60 +3,105 @@ const router = express.Router();
 const transporter = require('./mailer');
 const logger = require('./logger');
 const { htmlToText } = require('html-to-text');
+const db = require('./db');
 
 // Enable JSON parsing for API routes
 router.use(express.json());
 
 router.post('/send-email', async (req, res) => {
-  const { to, subject, text, html } = req.body;
-  if (!to || !subject || !(text || html)) {
-    logger.warn('Email send attempt with missing fields');
-    return res.status(400).json({ error: "Missing required fields." });
-  }
+	const { to, subject, text, html } = req.body;
+	if (!to || !subject || !(text || html)) {
+		logger.warn('Email send attempt with missing fields');
+		return res.status(400).json({ error: "Missing required fields." });
+	}
 
-  try {
-    await transporter.sendMail({
-      from: process.env.EMAIL_USER,
-      to,
-      subject,
-      text,
-      html,
-    });
-    logger.info(`Email sent to ${to} with subject "${subject}"`);
-    res.json({ success: true });
-  } catch (error) {
-    logger.error('Error sending email: ' + error.stack);
-    res.status(500).json({ error: "Failed to send email." });
-  }
+	try {
+		await transporter.sendMail({
+		from: process.env.EMAIL_USER,
+		to,
+		subject,
+		text,
+		html,
+		});
+		logger.info(`Email sent to ${to} with subject "${subject}"`);
+		res.json({ success: true });
+	} catch (error) {
+		logger.error('Error sending email: ' + error.stack);
+		res.status(500).json({ error: "Failed to send email." });
+	}
 });
 
 router.post('/send-contact', async (req, res) => {
 	const { to, subject, text, html } = req.body;
 	if (!to || !subject || !(text || html)) {
-	  logger.warn('Email send attempt with missing fields');
-	  return res.status(400).json({ error: "Missing required fields." });
+		logger.warn('Email send attempt with missing fields');
+		return res.status(400).json({ error: "Missing required fields." });
 	}
 
 	try {
-	  const mailOptions = {
-		  from: process.env.EMAIL_USER,
-		  to: process.env.EMAIL_TO,
-		  subject,
-	  };
-	  if (html) {
+		const mailOptions = {
+			from: process.env.EMAIL_USER,
+			to: process.env.EMAIL_TO,
+			subject,
+		};
+		if (html) {
 		mailOptions.html = html;
 		mailOptions.text = htmlToText(html);
-	  } else if (text) {
+		} else if (text) {
 		mailOptions.text = text;
-	  }
+		}
 
-	  await transporter.sendMail(mailOptions);
-	  logger.info(`Email sent to ${process.env.EMAIL_TO} with subject "${subject}"`);
-	  res.json({ success: true });
+		await transporter.sendMail(mailOptions);
+		logger.info(`Email sent to ${process.env.EMAIL_TO} with subject "${subject}"`);
+		res.json({ success: true });
 	} catch (error) {
-	  logger.error('Error sending email: ' + error.stack);
-	  res.status(500).json({ error: "Failed to send email." });
+		logger.error('Error sending email: ' + error.stack);
+		res.status(500).json({ error: "Failed to send email." });
 	}
 });
+
+router.post('/login', async (req, res) => {
+	const { email, password } = req.body;
+	if (!email || !password) {
+		logger.warn('Login attempt with missing fields');
+		return res.status(400).json({ error: "Missing email or password." });
+	}
+
+	try {
+		const user = await db.checkUserCredentials(email, password);
+		if (user) {
+			logger.info(`User ${email} logged in successfully`);
+			res.json({ success: true, message: "Login successful." });
+		} else {
+			logger.warn(`Login failed for user ${email}`);
+			res.status(401).json({ error: "Invalid email or password." });
+		}
+	} catch (error) {
+		logger.error('Error during login: ' + error.stack);
+		res.status(500).json({ error: "Failed to process login." });
+	}
+});
+
+router.post('/register', async (req, res) => {
+	const { firstName, lastName, email, password } = req.body;
+	if (!firstName || !lastName || !email || !password) {
+		logger.warn('Registration attempt with missing fields');
+		return res.status(400).json({ error: "Missing required fields." });
+	}
+
+	try {
+		const user = await db.createUser(firstName, lastName, email, password);
+		if (user) {
+			logger.info(`User ${email} registered successfully`);
+			res.json({ success: true, message: "Registration successful." });
+		} else {
+			logger.warn(`Registration failed for user ${email}`);
+			res.status(400).json({ error: "User already exists." });
+		}
+	} catch (error) {
+		logger.error('Error during registration: ' + error.stack);
+		res.status(500).json({ error: "Failed to process registration." });
+	}
+})
 
 module.exports = router;

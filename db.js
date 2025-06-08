@@ -1,6 +1,7 @@
 require('dotenv').config();
 const knex = require('knex')(require('./knexfile').development);
 const logger = require('./logger');
+const bcrypt = require('bcrypt');
 
 async function checkConnection() {
   try {
@@ -20,6 +21,43 @@ const db = {
       return users;
     } catch (error) {
       logger.error('Error fetching users:', error);
+      throw error;
+    }
+  },
+
+  checkUserCredentials: async (email, password) => {
+    try {
+      const user = await knex('users').select('*')
+        .where({ email }).first();
+
+      if (user && await bcrypt.compare(password, user.password)) {
+        logger.info('User credentials verified.');
+        return user;
+      } else {
+        logger.warn('Invalid email or password.');
+        return null;
+      }
+    } catch (error) {
+      logger.error('Error checking user credentials:', error);
+      throw error;
+    }
+  },
+
+  createUser: async (fisrtName, lastName, email, password) => {
+    try {
+      const hasedPassword = await bcrypt.hash(password, 10);
+      const newUser = {
+        first_name: firstName,
+        last_name: lastName,
+        email,
+        passwordHash: hasedPassword,
+        role: 'user'
+      };
+      const result = await knex('users').insert(newUser);
+      logger.info('User created:', newUser);
+      return result;
+    } catch (error) {
+      logger.error('Error creating user:', error);
       throw error;
     }
   },

@@ -96,9 +96,9 @@ html, body {
 }
 
 /*=========================
-  Contact
+  Contact & Login
 =========================*/
-#contactForm {
+.input-form {
    width: 100%;
    max-width: 600px;
    margin: 0 auto;
@@ -108,16 +108,15 @@ html, body {
    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-#contactForm label {
+.input-form label {
    display: block;
    margin-bottom: 8px;
    font-weight: 700;
    color: var(--color-text);
 }
 
-#contactForm input[type="email"],
-#contactForm input[type="text"],
-#contactForm textarea {
+.input-form input,
+.input-form textarea {
    width: 100%;
    padding: 10px;
    margin-bottom: 16px;
@@ -129,12 +128,12 @@ html, body {
    color: var(--color-text);
 }
 
-#contactForm textarea {
+.input-form textarea {
    resize: vertical;
    min-height: 120px;
 }
 
-#contactForm button {
+.input-form button {
    background: var(--color-accent);
    color: var(--color-tertiary);
    border: none;
@@ -146,7 +145,22 @@ html, body {
    transition: background 0.2s, color 0.2s;
 }
 
-#contactForm button:hover {
+.input-form a {
+   background: var(--color-accent);
+   color: var(--color-tertiary);
+   border: none;
+   border-radius: 4px;
+   padding: 10px 22px;
+   font-size: 1em;
+   font-weight: 700;
+   cursor: pointer;
+   transition: background 0.2s, color 0.2s;
+   text-decoration: none;
+   margin-top: 18px;
+}
+
+.input-form button:hover,
+.input-form a:hover {
    background: var(--color-secondary);
    color: var(--color-text);
 }

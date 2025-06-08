@@ -14,12 +14,12 @@ app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 app.use(express.static('public'));
 app.use(cookieParser(process.env.APP_Secret));
-//app.use(session({
-//  secret: process.env.APP_Secret,
-//  resave: false,
-//  saveUninitialized: false,
-//  cookie: { secure: false } // Set secure: true if using HTTPS
-//}));
+app.use(session({
+  secret: process.env.APP_Secret,
+  resave: false,
+  saveUninitialized: false,
+  cookie: { secure: false } // Set secure: true if using HTTPS
+}));
 app.use('/api', apiRoutes);
 
 // Middleware: Make activePath available to all views for nav highlighting
@@ -48,6 +48,14 @@ async function checkDbConnection() {
 async function renderWithLayout(res, page, options = {}) {
   // Ensure activePath is available
   options.activePath = res.locals.activePath || options.activePath || '/';
+
+  // Define pages that require authentication
+  const protectedPages = ['profile'];
+
+  // If the page is protected and the user is not authenticated, redirect to login
+  if (protectedPages.includes(page) && !res.req.session.user) {
+    return res.redirect('/login');
+  }
 
   // Check DB connection if required
   if (options.requireDb) {
