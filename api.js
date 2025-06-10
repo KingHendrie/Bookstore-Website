@@ -60,6 +60,28 @@ router.post('/send-contact', async (req, res) => {
 	}
 });
 
+router.post('/register', async (req, res) => {
+	const { firstName, lastName, email, password } = req.body;
+	if (!firstName || !lastName || !email || !password) {
+		logger.warn('Registration attempt with missing fields');
+		return res.status(400).json({ error: "Missing required fields." });
+	}
+
+	try {
+		const user = await db.createUser(firstName, lastName, email, password);
+		if (user) {
+			logger.info(`User ${email} registered successfully`);
+			res.json({ success: true, message: "Registration successful." });
+		} else {
+			logger.warn(`Registration failed for user ${email}`);
+			res.status(400).json({ error: "User already exists." });
+		}
+	} catch (error) {
+		logger.error('Error during registration: ' + error.stack);
+		res.status(500).json({ error: "Failed to process registration." });
+	}
+});
+
 router.post('/login', async (req, res) => {
 	const { email, password } = req.body;
 	if (!email || !password) {
@@ -90,26 +112,17 @@ router.post('/login', async (req, res) => {
 	}
 });
 
-router.post('/register', async (req, res) => {
-	const { firstName, lastName, email, password } = req.body;
-	if (!firstName || !lastName || !email || !password) {
-		logger.warn('Registration attempt with missing fields');
-		return res.status(400).json({ error: "Missing required fields." });
-	}
-
-	try {
-		const user = await db.createUser(firstName, lastName, email, password);
-		if (user) {
-			logger.info(`User ${email} registered successfully`);
-			res.json({ success: true, message: "Registration successful." });
-		} else {
-			logger.warn(`Registration failed for user ${email}`);
-			res.status(400).json({ error: "User already exists." });
+router.post('/logout', async (req, res) => {
+	req.session.destroy(err => {
+		if (err) {
+			logger.error('Error destroying session:', err);
+			return res.status(500).json({ error: 'Failed to log out.' });
 		}
-	} catch (error) {
-		logger.error('Error during registration: ' + error.stack);
-		res.status(500).json({ error: "Failed to process registration." });
-	}
-})
+
+		res.clearCookie('connect.sid'); // Default cookie name for express-session
+		logger.info('User logged out and session destroyed.');
+		return res.json({ success: true, message: 'Logout successful.' });
+	});
+});
 
 module.exports = router;
