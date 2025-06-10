@@ -1,5 +1,5 @@
 async function registerUser() {
-	const fistName = document.getElementById('firstName').value;
+	const firstName = document.getElementById('firstName').value;
 	const lastName = document.getElementById('lastName').value;
 	const email = document.getElementById('email').value;
 	const password = document.getElementById('password').value;
@@ -14,7 +14,7 @@ async function registerUser() {
 		method: 'POST',
 		headers: { 'Content-Type': 'application/json' },
 		body: JSON.stringify({
-			firstName: fistName,
+			firstName: firstName,
 			lastName: lastName,
 			email: email,
 			password: password
@@ -22,4 +22,10 @@ async function registerUser() {
 	});
 
 	const result = await response.json();
+	if (result.success) {
+		alert('Register successful! Redirecting...');
+		window.location.href = '/login';
+	} else {
+		alert(result.error);
+	}
 }

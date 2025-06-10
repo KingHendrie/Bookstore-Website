@@ -14,7 +14,7 @@ async function loginUser() {
 	const result = await response.json();
 	if (result.success) {
 		alert('Login successful! Redirecting...');
-		window.location.href = '/dashboard';
+		window.location.href = '/profile';
 	} else {
 		alert(result.error);
 	}

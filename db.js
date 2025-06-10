@@ -27,10 +27,10 @@ const db = {
 
   checkUserCredentials: async (email, password) => {
     try {
-      const user = await knex('users').select('*')
+      const user = await knex('user').select('*')
         .where({ email }).first();
 
-      if (user && await bcrypt.compare(password, user.password)) {
+      if (user && await bcrypt.compare(password, user.passwordHash)) {
         logger.info('User credentials verified.');
         return user;
       } else {
@@ -43,17 +43,18 @@ const db = {
     }
   },
 
-  createUser: async (fisrtName, lastName, email, password) => {
+  createUser: async (firstName, lastName, email, password) => {
     try {
-      const hasedPassword = await bcrypt.hash(password, 10);
+      const passwordHash = await bcrypt.hash(password, 10);
       const newUser = {
-        first_name: firstName,
-        last_name: lastName,
+        firstName,
+        lastName,
         email,
-        passwordHash: hasedPassword,
+        passwordHash,
         role: 'user'
       };
-      const result = await knex('users').insert(newUser);
+      logger.info('Creating new user:', newUser);
+      const result = await knex('user').insert(newUser);
       logger.info('User created:', newUser);
       return result;
     } catch (error) {
@@ -69,17 +70,6 @@ const db = {
       return user;
     } catch (error) {
       logger.error(`Error fetching user with ID ${id}:`, error);
-      throw error;
-    }
-  },
-
-  createUser: async (userData) => {
-    try {
-      const result = await knex('users').insert(userData);
-      logger.info('User created:', userData);
-      return result;
-    } catch (error) {
-      logger.error('Error creating user:', error);
       throw error;
     }
   },

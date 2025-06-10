@@ -70,6 +70,14 @@ router.post('/login', async (req, res) => {
 	try {
 		const user = await db.checkUserCredentials(email, password);
 		if (user) {
+			req.session.user = {
+				id: user.id,
+				email: user.email,
+				role: user.role,
+				firstName: user.firstName,
+				lastName: user.lastName
+			};
+
 			logger.info(`User ${email} logged in successfully`);
 			res.json({ success: true, message: "Login successful." });
 		} else {
