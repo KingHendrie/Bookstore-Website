@@ -1,3 +1,3 @@
 function showAlert() {
-	alert('Hello from the frontend!');
+	showToast('Hello from the frontend!', 'info');
 }

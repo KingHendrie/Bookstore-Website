@@ -25,8 +25,8 @@ async function sendEmailFromFrontend() {
 
 	const result = await response.json();
 	if (result.success) {
-		alert('Email sent!');
+		showToast('Email sent!', 'success');
 	} else {
-		alert(result.error);
+		showToast(result.error, 'error');
 	}
 }

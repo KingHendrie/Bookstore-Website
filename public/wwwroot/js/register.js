@@ -23,9 +23,9 @@ async function registerUser() {
 
 	const result = await response.json();
 	if (result.success) {
-		alert('Register successful! Redirecting...');
+		showToast('Register successful!', 'success');
 		window.location.href = '/login';
 	} else {
-		alert(result.error);
+		showToast(result.error, 'error');
 	}
 }

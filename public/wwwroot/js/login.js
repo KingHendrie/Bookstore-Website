@@ -13,10 +13,10 @@ async function loginUser() {
 
 	const result = await response.json();
 	if (result.success) {
-		alert('Login successful! Redirecting...');
+		showToast('Login successful!', 'success');
 		window.location.href = '/profile';
 	} else {
-		alert(result.error);
+		showToast(result.error, 'error');
 	}
 }
 
@@ -28,9 +28,9 @@ async function singOut() {
 
 	const result = await response.json();
 	if (result.success) {
-		alert('Logout successful! Redirecting...');
+		showToast('Logged out successfully', 'success');
 		window.location.href = '/login';
 	} else {
-		alert(result.error);
+		showToast(result.error, 'error');
 	}
 }
