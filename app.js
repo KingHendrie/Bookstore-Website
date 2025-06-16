@@ -46,20 +46,18 @@ async function checkDbConnection() {
 
 // Render with layout, handling 404 and 500
 async function renderWithLayout(res, page, options = {}) {
-  // Ensure activePath is available
+  // Ensure activePath is always available
   options.activePath = res.locals.activePath || options.activePath || '/';
 
-  if (res.req.session && res.req.session.user) {
-    options.isAdmin = res.req.session.user.role === 'admin';
-  } else {
-    options.isAdmin = false;
-  }
+  // Set isAdmin based on session
+  const user = res.req.session?.user;
+  options.isAdmin = user?.role === 'admin';
 
-  // Define pages that require authentication
-  const protectedPages = ['profile', 'admin'];
+  // Protect specific paths (e.g., /admin and /profile)
+  const protectedPaths = ['/profile', '/admin'];
+  const currentPath = res.req.path;
 
-  // If the page is protected and the user is not authenticated, redirect to login
-  if (protectedPages.includes(page) && !res.req.session.user) {
+  if (protectedPaths.some(p => currentPath.startsWith(p)) && !user) {
     return res.redirect('/login');
   }
 
@@ -86,9 +84,12 @@ async function renderWithLayout(res, page, options = {}) {
     }
   }
 
-  const pagePath = path.join(__dirname, 'views/pages', `${page}.ejs`);
-  try {
-    if (!fs.existsSync(pagePath)) {
+  let pagePath = path.join(__dirname, 'views/pages', `${page}.ejs`);
+  if (!fs.existsSync(pagePath)) {
+    const indexFallbackPath = path.join(__dirname, 'views/pages', page, 'index.ejs');
+    if (fs.existsSync(indexFallbackPath)) {
+      pagePath = indexFallbackPath;
+    } else {
       res.status(404);
       logger.warn(`Page not found: ${pagePath}`);
       const body = await ejs.renderFile(
@@ -101,7 +102,9 @@ async function renderWithLayout(res, page, options = {}) {
         body
       });
     }
+  }
 
+  try {
     const body = await ejs.renderFile(pagePath, options);
     logger.info(`Rendering page: ${page}`);
     res.render('layout', {
@@ -138,14 +141,12 @@ app.get('/profile', (req, res) => {
 app.get('*', (req, res, next) => {
   try {
     const segments = req.path.split('/').filter(Boolean);
-    const page = segments[0] || 'home';
-    const filter = segments.slice(1).join('/') || null;
+    const page = segments.join('/') || 'home';
     
     res.locals.activePath = req.path; // Ensure activePath is set
     
     renderWithLayout(res, page, {
-      title: capitalize(page),
-      filter,
+      title: capitalize(segments[segments.length - 1] || 'Home'),
       activePath: req.path // Explicitly pass activePath
     });
   } catch (err) {
