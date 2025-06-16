@@ -25,6 +25,22 @@ const db = {
     }
   },
 
+  checkUserExists: async (email) => {
+    try {
+      const user = await knex('user').select('*').where({ email }).first();
+      if (user) {
+        logger.info(`User with email ${email} exists.`);
+        return true;
+      } else {
+        logger.warn(`User with email ${email} does not exist.`);
+        return false;
+      }
+    } catch (error) {
+      logger.error('Error checking if user exists:', error);
+      throw error;
+    }
+  },
+
   checkUserCredentials: async (email, password) => {
     try {
       const user = await knex('user').select('*')
@@ -59,39 +75,6 @@ const db = {
       return result;
     } catch (error) {
       logger.error('Error creating user:', error);
-      throw error;
-    }
-  },
-
-  getUserById: async (id) => {
-    try {
-      const user = await knex('users').where({ id }).first();
-      logger.info(`Fetched user with ID: ${id}`);
-      return user;
-    } catch (error) {
-      logger.error(`Error fetching user with ID ${id}:`, error);
-      throw error;
-    }
-  },
-
-  updateUser: async (id, newData) => {
-    try {
-      const result = await knex('users').where({ id }).update(newData);
-      logger.info(`Updated user with ID ${id}:`, newData);
-      return result;
-    } catch (error) {
-      logger.error(`Error updating user with ID ${id}:`, error);
-      throw error;
-    }
-  },
-
-  deleteUser: async (id) => {
-    try {
-      const result = await knex('users').where({ id }).del();
-      logger.info(`Deleted user with ID ${id}`);
-      return result;
-    } catch (error) {
-      logger.error(`Error deleting user with ID ${id}:`, error);
       throw error;
     }
   }

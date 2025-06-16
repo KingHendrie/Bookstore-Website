@@ -1,12 +1,24 @@
-async function registerUser() {
-	const firstName = document.getElementById('firstName').value;
-	const lastName = document.getElementById('lastName').value;
-	const email = document.getElementById('email').value;
-	const password = document.getElementById('password').value;
-	const confirmPassword = document.getElementById('confirmPassword').value;
+password.addEventListener('blur', validatePasswords);
+confirmPassword.addEventListener('blur', validatePasswords);	
+
+function validatePasswords() {
+	let password = document.getElementById('password').value;
+	let confirmPassword = document.getElementById('confirmPassword').value;
 
 	if (password != confirmPassword) {
-		alert('Passwords do not match!');
+		showToast('Passwords do not match!', 'error');
+	}
+}
+
+async function registerUser() {
+	let firstName = document.getElementById('firstName').value;
+	let lastName = document.getElementById('lastName').value;
+	let email = document.getElementById('email').value;
+	let password = document.getElementById('password').value;
+	let confirmPassword = document.getElementById('confirmPassword').value;
+
+	if (password != confirmPassword) {
+		showToast('Passwords do not match!', 'error');
 		return;
 	}
 

@@ -68,6 +68,18 @@ router.post('/register', async (req, res) => {
 	}
 
 	try {
+		const userExists = await db.checkUserExists(email);
+		if (userExists) {
+			logger.warn(`Registration failed: User ${email} already exists.`);
+			return res.status(400).json({ error: "User already exists." });
+		}
+		logger.info(`User ${email} does not exist, proceeding with registration.`);
+	} catch (error) {
+		logger.error('Error checking user existence: ' + error.stack);
+		return res.status(500).json({ error: "Failed to process registration." });
+	}
+
+	try {
 		const user = await db.createUser(firstName, lastName, email, password);
 		if (user) {
 			logger.info(`User ${email} registered successfully`);
