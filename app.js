@@ -49,8 +49,14 @@ async function renderWithLayout(res, page, options = {}) {
   // Ensure activePath is available
   options.activePath = res.locals.activePath || options.activePath || '/';
 
+  if (res.req.session && res.req.session.user) {
+    options.isAdmin = res.req.session.user.role === 'admin';
+  } else {
+    options.isAdmin = false;
+  }
+
   // Define pages that require authentication
-  const protectedPages = ['profile'];
+  const protectedPages = ['profile', 'admin'];
 
   // If the page is protected and the user is not authenticated, redirect to login
   if (protectedPages.includes(page) && !res.req.session.user) {

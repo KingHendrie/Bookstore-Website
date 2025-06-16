@@ -18,6 +18,11 @@
          <li>
             <a href="/contact" class="<%= activePath.startsWith('/contact') ? 'active' : '' %>">Contact</a>
          </li>
+         <% if (isAdmin) { %>
+            <li>
+               <a href="/admin" class="<%= activePath.startsWith('/admin') ? 'active' : '' %>">Admin</a>
+            </li>
+          <% } %>
       </ul>
    </nav>
    <div class="sidebar-profile">
