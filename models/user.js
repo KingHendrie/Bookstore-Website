@@ -6,7 +6,8 @@ class User {
 			{ name: 'lastName', type: 'string', length: 255 },
 			{ name: 'email', type: 'string', length: 255, unique: true },
 			{ name: 'passwordHash', type: 'text' },
-			{ name: 'role', type: 'enum', values: ['admin', 'user'] }
+			{ name: 'role', type: 'enum', values: ['admin', 'user'] },
+			{ name: 'two_factor_enabled', type: 'boolean', default: false}
 		]
 	}
 }
