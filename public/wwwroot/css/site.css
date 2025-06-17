@@ -37,222 +37,22 @@ html, body {
 }
 
 /*=========================
-  Main Content
+  Core Container
 =========================*/
-.main-content {
-   margin-left: 220px; /* width of the fixed sidebar */
-   flex: 1;
-   display: flex;
-   flex-direction: column;
-   min-height: 100vh;
-   padding: 36px 40px;
-   overflow-x: hidden;
-}
-
-.main-content h1 {
-   margin-bottom: 18px;
-   color: var(--color-accent);
-}
-
-.main-content button {
-   background: var(--color-accent);
-   color: var(--color-tertiary);
-   border: none;
-   border-radius: 4px;
-   padding: 10px 22px;
-   font-size: 1em;
-   font-weight: 700;
-   margin-top: 18px;
-   box-shadow: 0 2px 4px rgba(0,0,0,0.04);
-   cursor: pointer;
-   transition: background 0.2s, color 0.2s;
-}
-
-.main-content button:hover {
-   background: var(--color-secondary);
-   color: var(--color-text);
-}
-
-/*=========================
-  Banner
-=========================*/
-.banner {
-   width: 100%;
-   padding-bottom: 20px;
-   display: flex;
-   justify-content: center;
-   align-items: center;
-}
-
-.banner-content {
-   text-align: center;
-}
-
-.banner-image {
-   max-width: 100%;
-   height: auto;
-   border-radius: 8px;
-   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-/*=========================
-  inputs
-=========================*/
-.input-form {
-   width: 100%;
-   max-width: 600px;
-   margin: 0 auto;
-   padding: 20px;
+.container {
    background: var(--color-tertiary);
-   border-radius: 8px;
-   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-.input-form label {
-   display: block;
-   margin-bottom: 8px;
-   font-weight: 700;
-   color: var(--color-text);
-}
-
-.input-form input,
-.input-form textarea {
+   border-radius: 10px;
+   box-shadow: 0 2px 8px rgba(209, 194, 178, 0.18);
+   padding: 32px 24px;
+   margin: 32px auto;
+   max-width: 1100px;
    width: 100%;
-   padding: 10px;
-   margin-bottom: 16px;
-   border: 1px solid var(--color-primary);
-   border-radius: 4px;
-   font-size: 1em;
-   font-family: 'Roboto', Arial, sans-serif;
-   background: var(--color-actions);
-   color: var(--color-text);
 }
 
-.input-form textarea {
-   resize: vertical;
-   min-height: 120px;
-}
-
-.input-form button {
-   background: var(--color-accent);
-   color: var(--color-tertiary);
-   border: none;
-   border-radius: 4px;
-   padding: 10px 22px;
-   font-size: 1em;
+.container h1, .container h2, .container h3 {
+   color: var(--color-accent);
+   margin-bottom: 20px;
    font-weight: 700;
-   cursor: pointer;
-   transition: background 0.2s, color 0.2s;
-}
-
-.input-form a {
-   background: var(--color-accent);
-   color: var(--color-tertiary);
-   border: none;
-   border-radius: 4px;
-   padding: 10px 22px;
-   font-size: 1em;
-   font-weight: 700;
-   cursor: pointer;
-   transition: background 0.2s, color 0.2s;
-   text-decoration: none;
-   margin-top: 18px;
-}
-
-.input-form button:hover,
-.input-form a:hover {
-   background: var(--color-secondary);
-   color: var(--color-text);
-}
-
-/*=========================
-  Tiles
-=========================*/
-.tile-group {
-   display: flex;
-   flex-wrap: wrap;
-   justify-content: center; /* Center if less than 4 */
-   gap: 1.5rem;
-   margin-top: 2rem;
-}
-
-.tile-link {
-   text-decoration: none;
-   color: inherit;
-   display: inline-block;
-}
- 
-.tile-link .tile {
-   cursor: pointer;
-}
-
-.tile {
-   background-color: var(--color-accent);
-   border-radius: 12px;
-   width: 200px;
-   height: 200px;
-   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-   display: flex;
-   flex-direction: column;
-   overflow: hidden;
-   transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
- 
-.tile:hover {
-   transform: translateY(-5px);
-   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
-   background-color: var(--color-secondary);
-}
- 
-.tile-image {
-   flex: 1 1 auto;
-   display: flex;
-   align-items: center;
-   justify-content: center;
-   padding: 1rem;
-   background-color: var(--color-accent);
-}
- 
-.tile-image svg {
-   width: 60%;
-   height: auto;
-   max-height: 100%;
-   color: #333;
-   color: var(--color-text);
-}
- 
-.tile-body {
-   padding: 0.75rem;
-   background-color: var(--color-tertiary);
-   text-align: center;
-}
- 
-.tile-body h3 {
-   margin: 0;
-   font-size: 1rem;
-   color: var(--color-text);
-}
-
-/*=========================
-  Button
-=========================*/
-.btn {
-   background: var(--color-accent);
-   color: var(--color-tertiary);
-   border: none;
-   border-radius: 4px;
-   padding: 10px 22px;
-   font-size: 1em;
-   font-weight: 700;
-   cursor: pointer;
-   transition: background 0.2s, color 0.2s;
-   text-decoration: none;
-   margin-top: 18px;
-}
-
-.btn:hover {
-   background: var(--color-secondary);
-   color: var(--color-text);
 }
 
 /*=========================
@@ -267,16 +67,6 @@ footer {
    font-size: 0.95em;
    text-align: center;
    background: var(--color-footer);
-}
-
-/*=========================
-  Actions/Utility Areas
-=========================*/
-.actions {
-   background: var(--color-actions);
-   padding: 12px 20px;
-   border-radius: 5px;
-   margin-bottom: 18px;
 }
 
 /*=========================
@@ -297,15 +87,9 @@ footer {
   Responsive Design
 =========================*/
 @media (max-width: 900px) {
-   .main-content {
-      margin-left: 170px;
-      padding: 20px 14px;
-   }
-
-   .tile {
-      width: 45%;
-      height: 45vw;
-      max-height: 200px;
+   .container {
+      padding: 18px 5px;
+      margin: 20px 0;
    }
 }
 
@@ -314,14 +98,8 @@ footer {
       flex-direction: column;
    }
 
-   .main-content {
-      margin-left: 0;
-      padding: 18px 6px;
-   }
-
-   .tile {
-      width: 100%;
-      height: auto;
+   .container {
+      padding: 4px 2px;
    }
 
    footer {
