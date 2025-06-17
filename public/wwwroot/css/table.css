@@ -19,7 +19,7 @@
 }
  
 .table th {
-   color: var(--color-accent);
+   color: var(--color-text);
    font-weight: 700;
    letter-spacing: 1px;
 }
@@ -28,7 +28,7 @@
    border-bottom: none;
 }
  
-.table tr:hover {
+.table tbody tr:hover {
    background: var(--color-actions);
    transition: background 0.2s;
 }
