@@ -149,4 +149,84 @@ router.get('/users', async (req, res) => {
 	}
 });
 
+router.put('/users/:id', async (req, res) => {
+	const { id } = req.params;
+	const { firstName, lastName, email, password, role } = req.body;
+
+	if (!firstName || !lastName || !email || !role) {
+		logger.warn('Update attempt with missing fields');
+		return res.status(400).json({ error: "Missing required fields." });
+	}
+
+	try {
+		const updated = await db.updateUser(id, {
+			firstName,
+			lastName,
+			email,
+			password,
+			role
+		});
+		if (updated) {
+			logger.info(`User ${email} updated successfully`);
+			res.json({ success: true, message: "User updated." });
+		} else {
+			logger.warn(`Update failed for user ${email}`);
+			res.status(400).json({ error: "Update failed." });
+		}
+	} catch (error) {
+		logger.error('Error updating user: ' + error.stack);
+		res.status(500).json({ error: "Failed to update user." });
+	}
+});
+
+router.get('/profile', async (req, res) => {
+	if (!req.session.user) {
+	  return res.status(401).json({ error: "Not authenticated." });
+	}
+	try {
+		const user = await db.getUserById(req.session.user.id);
+		if (!user) return res.status(404).json({ error: "User not found." });
+		res.json({
+			id: user.id,
+			firstName: user.firstName,
+			lastName: user.lastName,
+			email: user.email,
+			twoFAEnabled: !!user.twoFAEnabled // or whatever your 2FA field is
+		});
+	} catch (error) {
+		logger.error('Error getting user: ' + error.stack);
+		res.status(500).json({ error: "Failed to fetch user info." });
+	}
+});
+
+router.post('/profile/2fa', async (req, res) => {
+	if (!req.session.user) {
+		return res.status(401).json({ error: "Not authenticated." });
+	}
+
+	try {
+		await db.setTwoFA(req.session.user.id, true);
+		req.session.user.twoFAEnabled = true;
+		res.json({ success: true });
+	} catch (error) {
+		logger.error('Error enabling 2FA: ' + error.stack);
+		res.status(500).json({ error: "Failed to enable 2FA." });
+	}
+});
+
+router.delete('/profile/2fa', async (req, res) => {
+	if (!req.session.user) {
+		return res.status(401).json({ error: "Not authenticated." });
+	}
+
+	try {
+		await db.setTwoFA(req.session.user.id, false);
+		req.session.user.twoFAEnabled = false;
+		res.json({ success: true });
+	} catch (error) {
+		logger.error('Error disabling 2FA: ' + error.stack);
+		res.status(500).json({ error: "Failed to disable 2FA." });
+	}
+});
+
 module.exports = router;

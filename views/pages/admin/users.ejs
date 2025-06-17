@@ -13,6 +13,7 @@
 						<th>First Name</th>
 						<th>Last Name</th>
 						<th>Email</th>
+						<th>2FA</th>
 						<th>Role</th>
 					</tr>
 				</thead>
@@ -42,7 +43,7 @@
 		<h3><span id="modalTitle">Create New User</span></h3>
 		<form id="createUserForm" class="input-form">
 			<input type="hidden" id="userId" name="userId">
-			
+
 			<label for="firstName">First Name</label>
 			<input id="firstName" name="firstName" required>
 
@@ -53,7 +54,12 @@
 			<input id="email" name="email" type="email" required>
 
 			<label for="password">Password</label>
-			<input id="password" name="password" type="password" required>
+			<input id="password" name="password" type="password">
+
+			<div id="confirmPasswordGroup" style="display:none;">
+			<label for="confirmPassword">Confirm Password</label>
+			<input id="confirmPassword" name="confirmPassword" type="password">
+			</div>
 
 			<label for="role">Role</label>
 			<select id="role" name="role" required>

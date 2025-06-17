@@ -79,6 +79,46 @@ const db = {
     }
   },
 
+  updateUser: async (id, { firstName, lastName, email, password, role }) => {
+    try {
+      const updateData = { firstName, lastName, email, role };
+      if (password && password.trim() !== "") {
+        updateData.passwordHash = await bcrypt.hash(password, 10);
+      }
+      const result = await knex('user')
+        .where({ id })
+        .update(updateData);
+      return result > 0;
+    } catch (error) {
+      logger.error('Error updating user:', error);
+      throw error;
+    }
+  },
+
+  getUserById: async (id) => {
+    try {
+      return await knex('user')
+        .select('id', 'firstName', 'lastName', 'email', 'two_factor_enabled')
+        .where({ id })
+        .first();
+    } catch (error) {
+      logger.error('Error getting user:', error);
+      throw error;
+    }
+  },
+
+  setTwoFA: async (id, enabled) => {
+    try {
+      await knex('user')
+        .where({ id })
+        .update({ two_factor_enabled: !!enabled });
+      return true;
+    } catch (error) {
+      logger.error('Error setting 2FA:', error);
+      throw error;
+    }
+  },
+
   getUsersPaginated: async (page = 1, pageSize = 10) => {
     try {
       const offset = (page - 1) * pageSize;

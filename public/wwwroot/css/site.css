@@ -36,6 +36,22 @@ html, body {
    width: 100%;
 }
 
+.password-toggle-wrapper {
+   display: block;
+   position: relative;
+}
+ 
+.password-toggle-btn svg {
+   display: block;
+   stroke: var(--color-accent, #E39A3B);
+   background: none;
+   pointer-events: none;
+}
+ 
+.password-toggle-btn:focus {
+   outline: 2px solid var(--color-accent, #E39A3B);
+}
+
 /*=========================
   Core Container
 =========================*/

@@ -15,12 +15,15 @@ function openCreateUserModal(e) {
 	userIdInput.value = '';
 	document.getElementById('createUserForm').reset();
 	errorDiv.style.display = 'none';
+	document.getElementById('password').required = true;
+	document.getElementById('confirmPassword').required = true;
+	document.getElementById('confirmPasswordGroup').style.display = '';
 	modal.classList.remove('d-none');
 	document.body.style.overflow = 'hidden';
 	document.getElementById('firstName').focus();
-}
+ }
 
-function openEditUserModal(user) {
+ function openEditUserModal(user) {
 	modalTitle.textContent = 'Edit User';
 	modalSubmitBtn.textContent = 'Update';
 	userIdInput.value = user.id;
@@ -30,10 +33,13 @@ function openEditUserModal(user) {
 	document.getElementById('password').value = '';
 	document.getElementById('role').value = user.role;
 	errorDiv.style.display = 'none';
+	document.getElementById('password').required = false;
+	document.getElementById('confirmPassword').required = false;
+	document.getElementById('confirmPasswordGroup').style.display = 'none';
 	modal.classList.remove('d-none');
 	document.body.style.overflow = 'hidden';
 	document.getElementById('firstName').focus();
-}
+ }
 
 function closeCreateUserModal() {
 	modal.classList.add('d-none');
@@ -56,6 +62,21 @@ document.getElementById('createUserForm').addEventListener('submit', async funct
 	e.preventDefault();
 	const form = e.target;
 	const userId = form.userId.value;
+	const isCreate = !userId;
+
+	if (isCreate) {
+		if (form.password.value !== form.confirmPassword.value) {
+			errorDiv.textContent = 'Passwords do not match.';
+			errorDiv.style.display = '';
+			return;
+		}
+		if (!form.password.value) {
+			errorDiv.textContent = 'Password is required.';
+			errorDiv.style.display = '';
+			return;
+		}
+	}
+
 	const url = userId ? `/api/users/${userId}` : '/api/register';
 	const method = userId ? 'PUT' : 'POST';
 
@@ -111,6 +132,7 @@ async function loadUsers(page = 1, pageSize = 10) {
 					<td>${user.firstName}</td>
 					<td>${user.lastName}</td>
 					<td>${user.email}</td>
+					<td>${user.two_factor_enabled ? 'Yes' : ''}</td>
 					<td>${user.role}</td>
 				`;
 				row.style.cursor = 'pointer';

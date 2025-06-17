@@ -1,5 +1,57 @@
-<h3>Test session</h3>
+<div class="container profile-container">
+	<h2>Your Profile</h2>
 
-<a type="button" class="btn" onclick="singOut();">Sign Out</a>
+	<!-- General Info Section -->
+	<section class="mb-3">
+		<h3>General Information</h3>
+		<form id="profileInfoForm" class="input-form">
+			<label for="profileFirstName">First Name</label>
+			<input id="profileFirstName" name="firstName" type="text" required>
 
-<script src="/wwwroot/js/login.js"></script>
+			<label for="profileLastName">Last Name</label>
+			<input id="profileLastName" name="lastName" type="text" required>
+
+			<label for="profileEmail">Email</label>
+			<input id="profileEmail" name="email" type="email" disabled>
+
+			<button type="submit" class="btn">Update Info</button>
+			<div id="profile-info-message" class="alert mt-3 d-none"></div>
+		</form>
+	</section>
+
+	<!-- Security Section -->
+	<section class="mb-3">
+		<h3>Security</h3>
+		<form id="profilePasswordForm" class="input-form">
+			<label for="currentPassword">Current Password</label>
+			<input id="currentPassword" name="currentPassword" type="password" required>
+
+			<label for="newPassword">New Password</label>
+			<input id="newPassword" name="newPassword" type="password" required>
+
+			<label for="confirmNewPassword">Confirm New Password</label>
+			<input id="confirmNewPassword" name="confirmNewPassword" type="password" required>
+
+			<button type="submit" class="btn">Change Password</button>
+			<div id="profile-password-message" class="alert mt-3 d-none"></div>
+		</form>
+	</section>
+
+	<!-- 2FA Section -->
+	<section>
+		<h3>Two-Factor Authentication (2FA)</h3>
+		<div id="2fa-section" class="mb-3">
+			<div id="2fa-status">
+			<!-- Populated by JS -->
+			<span>Loading 2FA status...</span>
+			</div>
+			<div id="profile-2fa-message" class="alert mt-3 d-none"></div>
+		</div>
+	</section>
+
+	<hr class="mb-3">
+
+	<a type="button" class="btn" onclick="signOut();">Sign Out</a>
+</div>
+
+<script src="/wwwroot/js/profile.js"></script>
