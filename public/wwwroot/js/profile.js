@@ -56,36 +56,105 @@ document.getElementById('profileInfoForm').addEventListener('submit', async func
 	}
 });
 
+function showPasswordCodeModal(newPassword) {
+	const modal = document.getElementById('password2FAModal');
+	modal.classList.remove('d-none');
+	document.body.style.overflow = 'hidden';
+	document.getElementById('password2FACode').value = '';
+	document.getElementById('password2FA-error').classList.add('d-none');
+	modal.dataset.newPassword = newPassword;
+}
+ 
+function hidePasswordCodeModal() {
+	document.getElementById('password2FAModal').classList.add('d-none');
+	document.body.style.overflow = '';
+}
+
+document.getElementById('closePassword2FAModal').onclick =
+document.getElementById('cancelPassword2FA').onclick = hidePasswordCodeModal;
+document.querySelector('#password2FAModal .modal-backdrop').onclick = hidePasswordCodeModal;
+document.addEventListener('keydown', function(e) {
+  if (!document.getElementById('password2FAModal').classList.contains('d-none') && e.key === 'Escape') hidePasswordCodeModal();
+});
+
+document.getElementById('password2FAForm').addEventListener('submit', async function(e) {
+	e.preventDefault();
+	document.getElementById('password2FALoading').classList.remove('d-none');
+	document.getElementById('password2FA-error').classList.add('d-none');
+ 
+	const code = document.getElementById('password2FACode').value.trim();
+	const newPassword = document.getElementById('password2FAModal').dataset.newPassword;
+
+	try {
+		const res = await fetch('/api/profile/password', {
+		method: 'PUT',
+		headers: { 'Content-Type': 'application/json' },
+		body: JSON.stringify({ code, newPassword })
+	});
+
+	const json = await res.json();
+	document.getElementById('password2FALoading').classList.add('d-none');
+	if(json.success) {
+		showToast('Password updated!', 'success');
+		document.getElementById('profilePasswordForm').reset();
+		hidePasswordCodeModal();
+	} else {
+		document.getElementById('password2FA-error').textContent = json.error || 'Could not change password.';
+		document.getElementById('password2FA-error').classList.remove('d-none');
+		showToast(json.error || 'Could not change password.', 'error');
+	}
+	} catch (error) {
+		document.getElementById('password2FALoading').classList.add('d-none');
+		document.getElementById('password2FA-error').textContent = 'Could not change password.';
+		document.getElementById('password2FA-error').classList.remove('d-none');
+		showToast('Could not change password.', 'error');
+	}
+});
+
 document.getElementById('profilePasswordForm').addEventListener('submit', async function(e) {
 	e.preventDefault();
 
-	if (this.newPassword.value !== this.confirmNewPassword.value) {
+	const newPassword = this.newPassword.value;
+	const confirmNewPassword = this.confirmNewPassword.value;
+
+	if (newPassword !== confirmNewPassword) {
 		showToast('New passwords do not match.', 'error');
 		return;
 	}
 
-	const data = {
-		currentPassword: this.currentPassword.value,
-		newPassword: this.newPassword.value
-	};
+	try {
+		const reqRes = await fetch('/api/profile/password/request', { method: 'POST' });
+		const reqJson = await reqRes.json();
+		if(!reqJson.success) {
+			showToast(reqJson.error || 'Could not start password reset. ' + reqJson.error, 'error');
+			return;
+		}
+		showToast('Check your email for the verification code.', 'info');
+		showPasswordCodeModal(newPassword);
+	} catch (error) {
+		showToast('Could not start password reset. - ' + error.stack, 'error');
+	}
+});
 
+async function verifyPasswordChange(code, newPassword) {
 	try {
 		const res = await fetch('/api/profile/password', {
 			method: 'PUT',
 			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify(data)
+			body: JSON.stringify({ code, newPassword })
 		});
 		const json = await res.json();
 		if(json.success) {
 			showToast('Password updated!', 'success');
-			this.reset();
+			document.getElementById('profilePasswordForm').reset();
+			hidePasswordCodeModal();
 		} else {
 			showToast(json.error || 'Could not change password.', 'error');
 		}
 	} catch (error) {
 		showToast('Could not change password.', 'error');
 	}
-});
+}
 
 async function enable2FA() {
 	try {

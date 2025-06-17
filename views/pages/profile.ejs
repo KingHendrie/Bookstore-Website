@@ -23,9 +23,6 @@
 	<section class="mb-3">
 		<h3>Security</h3>
 		<form id="profilePasswordForm" class="input-form">
-			<label for="currentPassword">Current Password</label>
-			<input id="currentPassword" name="currentPassword" type="password" required>
-
 			<label for="newPassword">New Password</label>
 			<input id="newPassword" name="newPassword" type="password" required>
 
@@ -36,6 +33,28 @@
 			<div id="profile-password-message" class="alert mt-3 d-none"></div>
 		</form>
 	</section>
+
+	<!-- 2FA Code Modal for Password Change -->
+	<div id="password2FAModal" class="modal d-none">
+		<div class="modal-backdrop"></div>
+		<div class="modal-content">
+			<button class="modal-close" id="closePassword2FAModal" aria-label="Close">&times;</button>
+			<h3>Password Change Verification</h3>
+			<form id="password2FAForm" class="input-form">
+				<label for="password2FACode">Enter the code sent to your email:</label>
+				<input type="text" id="password2FACode" name="password2FACode" required placeholder="xxx-xxx-xxx" autocomplete="one-time-code" maxlength="11">
+				<div class="d-flex justify-content-between mt-3">
+					<button type="button" class="btn" id="cancelPassword2FA">Cancel</button>
+					<button type="submit" class="btn">Change Password</button>
+				</div>
+				<div id="password2FA-error" class="alert alert-danger mt-3 d-none"></div>
+				<div id="password2FALoading" class="mt-3 d-flex align-items-center justify-content-center d-none">
+					<div class="spinner-border"></div>
+					<span class="ms-2">Processing...</span>
+				</div>
+			</form>
+		</div>
+	</div>
 
 	<!-- 2FA Section -->
 	<section>

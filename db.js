@@ -119,6 +119,18 @@ const db = {
     }
   },
 
+  updateUserPassword: async (id, passwordHash) => {
+    try {
+      await knex('user')
+        .where({ id })
+        .update({ passwordHash });
+      return true;
+    } catch (error) {
+      logger.error('Error updating user password:', error);
+      throw error;
+    }
+  },
+
   getUsersPaginated: async (page = 1, pageSize = 10) => {
     try {
       const offset = (page - 1) * pageSize;

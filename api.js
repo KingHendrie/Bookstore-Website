@@ -4,7 +4,7 @@ const transporter = require('./mailer');
 const logger = require('./logger');
 const { htmlToText } = require('html-to-text');
 const db = require('./db');
-const crypto = require('crypto');
+const bcrypt = require('bcrypt');
 
 function generate2FACode() {
 	const digits = () => Math.floor(100 + Math.random() * 900);
@@ -280,6 +280,74 @@ router.patch('/profile/2fa', async (req, res) => {
 	} catch (error) {
 		logger.error('Error updating 2FA: ' + error.stack);
 		res.status(500).json({ error: "Failed to update 2FA." });
+	}
+});
+
+router.post('/profile/password/request', async (req, res) => {
+	if (!req.session.user) {
+		logger.warn('Password change request without authentication');
+		return res.status(401).json({ error: "Not authenticated." });
+	}
+
+	try {
+		const user = await db.getUserById(req.session.user.id);
+		if (!user) return res.status(404).json({ error: "User not found." });
+
+		const code = generate2FACode();
+		req.session.pendingPasswordChange = {
+			userId: user.id,
+			code,
+			expires: Date.now() + 5 * 60 * 1000
+		};
+
+		await transporter.sendMail({
+			from: process.env.EMAIL_USER,
+			to: user.email,
+			subject: "Your Password Change Code",
+			text: `Your code to change password: ${code}`,
+			html: `<p>Your code to change password: <b>${code}</b></p>`
+		});
+
+		res.json({ success: true, message: "Verification code sent to your email." });
+	} catch (error) {
+		logger.error('Error sending password change code: ' + error.stack);
+		res.status(500).json({ error: "Failed to send password change code." });
+	}
+});
+
+router.put('/profile/password', async (req, res) => {
+	const { code, newPassword } = req.body;
+	if (!req.session.user) {
+		logger.warn('Password change attempt without authentication');
+		return res.status(401).json({ error: "Not authenticated." });
+	}
+	const pending = req.session.pendingPasswordChange;
+	if (!pending || pending.userId !== req.session.user.id) {
+		logger.warn('Password change attempt without pending request');
+		return res.status(400).json({ error: "No password change requested." });
+	}
+	if (!code || !newPassword) {
+		logger.warn('Password change attempt with missing fields');
+		return res.status(400).json({ error: "Code and new password required." });
+	}
+	if (pending.expires < Date.now()) {
+		logger.warn(`Password change code expired for user ${pending.userId}`);
+		delete req.session.pendingPasswordChange;
+		return res.status(400).json({ error: "Verification code expired." });
+	}
+	if (pending.code !== code.trim()) {
+		logger.warn(`Password change failed for user ${pending.userId}: Incorrect code`);
+		return res.status(401).json({ error: "Incorrect verification code." });
+	}
+
+	try {
+		const hash = await bcrypt.hash(newPassword, 10);
+		await db.updateUserPassword(req.session.user.id, hash);
+		delete req.session.pendingPasswordChange;
+		res.json({ success: true, message: "Password updated." });
+	} catch (error) {
+		logger.error('Error updating password: ' + error.stack);
+		res.status(500).json({ error: "Failed to update password." });
 	}
 });
 
