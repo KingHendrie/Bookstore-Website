@@ -89,7 +89,11 @@ document.getElementById('profilePasswordForm').addEventListener('submit', async 
 
 async function enable2FA() {
 	try {
-		const res = await fetch('/api/profile/2fa', { method: 'POST' });
+		const res = await fetch('/api/profile/2fa', {
+			method: 'PATCH',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ enabled: true })
+		});
 		const json = await res.json();
 		if(json.success) {
 			showToast('2FA enabled! (Further setup may be required)', 'success');
@@ -104,16 +108,20 @@ async function enable2FA() {
  
 async function disable2FA() {
 	try {
-		const res = await fetch('/api/profile/2fa', { method: 'DELETE' });
+		const res = await fetch('/api/profile/2fa', {
+			method: 'PATCH',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ enabled: false })
+		});
 		const json = await res.json();
 		if(json.success) {
 			showToast('2FA disabled.', 'success');
 			render2FAStatus(false);
 		} else {
-			showToast(json.error || 'Could not disable 2FA.', 'error');
+			showToast(json.error || 'Could not disable 2FA. ' + json.error, 'error');
 		}
 	} catch (error) {
-		showToast('Could not disable 2FA.', 'error');
+		showToast('Could not disable 2FA. - ' + error.stack, 'error');
 	}
 }
 

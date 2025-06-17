@@ -265,33 +265,21 @@ router.get('/profile', async (req, res) => {
 	}
 });
 
-router.post('/profile/2fa', async (req, res) => {
+router.patch('/profile/2fa', async (req, res) => {
 	if (!req.session.user) {
 		return res.status(401).json({ error: "Not authenticated." });
 	}
-
+	const { enabled } = req.body;
+	if (typeof enabled !== "boolean") {
+		return res.status(400).json({ error: "Enabled flag required (boolean)." });
+	}
 	try {
-		await db.setTwoFA(req.session.user.id, true);
-		req.session.user.two_factor_enabled = true;
+		await db.setTwoFA(req.session.user.id, enabled);
+		req.session.user.two_factor_enabled = enabled;
 		res.json({ success: true });
 	} catch (error) {
-		logger.error('Error enabling 2FA: ' + error.stack);
-		res.status(500).json({ error: "Failed to enable 2FA." });
-	}
-});
-
-router.delete('/profile/2fa', async (req, res) => {
-	if (!req.session.user) {
-		return res.status(401).json({ error: "Not authenticated." });
-	}
-
-	try {
-		await db.setTwoFA(req.session.user.id, false);
-		req.session.user.two_factor_enabled = false;
-		res.json({ success: true });
-	} catch (error) {
-		logger.error('Error disabling 2FA: ' + error.stack);
-		res.status(500).json({ error: "Failed to disable 2FA." });
+		logger.error('Error updating 2FA: ' + error.stack);
+		res.status(500).json({ error: "Failed to update 2FA." });
 	}
 });
 
