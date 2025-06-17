@@ -118,10 +118,10 @@ async function disable2FA() {
 			showToast('2FA disabled.', 'success');
 			render2FAStatus(false);
 		} else {
-			showToast(json.error || 'Could not disable 2FA. ' + json.error, 'error');
+			showToast(json.error || 'Could not disable 2FA.', 'error');
 		}
 	} catch (error) {
-		showToast('Could not disable 2FA. - ' + error.stack, 'error');
+		showToast('Could not disable 2FA.', 'error');
 	}
 }
 
