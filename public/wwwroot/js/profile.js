@@ -6,7 +6,7 @@ async function populateProfile() {
 		document.getElementById('profileFirstName').value = user.firstName || '';
 		document.getElementById('profileLastName').value = user.lastName || '';
 		document.getElementById('profileEmail').value = user.email || '';
-		render2FAStatus(user.twoFAEnabled);
+		render2FAStatus(user.two_factor_enabled);
 	} catch (error) {
 		showToast('Unable to load profile.', 'error');
 	}

@@ -43,7 +43,7 @@
 }
 
 .sidebar-nav a {
-   color: var(--color-accent);
+   color: var(--color-text);
    text-decoration: none;
    display: block;
    padding: 10px 18px;

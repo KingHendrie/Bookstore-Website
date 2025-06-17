@@ -11,4 +11,25 @@
 	</div>
 </form>
 
+<div id="twoFAModal" class="modal d-none">
+	<div class="modal-backdrop"></div>
+	<div class="modal-content">
+		<button class="modal-close" id="close2FAModal" aria-label="Close">&times;</button>
+		<h3>Two-Factor Authentication</h3>
+		<form id="twoFAForm" class="input-form">
+			<label for="twoFACode">Enter the 2FA code sent to your email:</label>
+			<input type="text" id="twoFACode" name="twoFACode" required placeholder="xxx-xxx-xxx" autocomplete="one-time-code" maxlength="11">
+			<div class="d-flex justify-content-between mt-3">
+				<button type="button" class="btn" id="cancel2FA">Cancel</button>
+				<button type="submit" class="btn">Verify</button>
+			</div>
+			<div id="twoFA-error" class="alert alert-danger mt-3 d-none"></div>
+		</form>
+		<div id="twoFALoading" class="mt-3 d-flex align-items-center justify-content-center d-none">
+			<div class="spinner-border"></div>
+			<span class="ms-2">Processing...</span>
+		</div>
+	</div>
+</div>
+
 <script src="/wwwroot/js/login.js"></script>

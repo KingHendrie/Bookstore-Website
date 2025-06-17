@@ -4,6 +4,12 @@ const transporter = require('./mailer');
 const logger = require('./logger');
 const { htmlToText } = require('html-to-text');
 const db = require('./db');
+const crypto = require('crypto');
+
+function generate2FACode() {
+	const digits = () => Math.floor(100 + Math.random() * 900);
+	return `${digits()}-${digits()}-${digits()}`;
+}
 
 // Enable JSON parsing for API routes
 router.use(express.json());
@@ -29,6 +35,45 @@ router.post('/send-email', async (req, res) => {
 		logger.error('Error sending email: ' + error.stack);
 		res.status(500).json({ error: "Failed to send email." });
 	}
+});
+
+router.post('/verify-2fa', async (req, res) => {
+	const { code } = req.body;
+	const pending = req.session.pending2FA;
+	if (!pending) {
+		logger.warn('2FA verification attempt without pending challenge');
+		return res.status(400).json({ error: "No 2FA challenge pending." });
+	}
+	if (!code || typeof code !== "string") {
+		logger.warn('2FA verification attempt with missing code');
+		return res.status(400).json({ error: "Code required." });
+	}
+	if (pending.expires < Date.now()) {
+		logger.warn('2FA code expired for user ' + pending.userId);
+		delete req.session.pending2FA;
+		return res.status(400).json({ error: "2FA code expired. Please login again." });
+	}
+	if (pending.code !== code.trim()) {
+		logger.warn(`2FA verification failed for user ${pending.userId}: Incorrect code`);
+		return res.status(401).json({ error: "Incorrect 2FA code." });
+	}
+
+	const user = await db.getUserById(pending.userId);
+	if (!user) {
+		logger.warn(`2FA verification failed: User ${pending.userId} does not exist.`);
+		return res.status(400).json({ error: "User no longer exists." });
+	}
+
+	req.session.user = {
+			id: user.id,
+			email: user.email,
+			role: user.role,
+			firstName: user.firstName,
+			lastName: user.lastName
+	};
+
+	delete req.session.pending2FA;
+	res.json({ success: true, message: "2FA verified. Login complete." });
 });
 
 router.post('/send-contact', async (req, res) => {
@@ -104,16 +149,37 @@ router.post('/login', async (req, res) => {
 	try {
 		const user = await db.checkUserCredentials(email, password);
 		if (user) {
-			req.session.user = {
-				id: user.id,
-				email: user.email,
-				role: user.role,
-				firstName: user.firstName,
-				lastName: user.lastName
-			};
+			if (user.two_factor_enabled) {
+				const code = generate2FACode();
+				req.session.pending2FA = {
+						userId: user.id,
+						email: user.email,
+						role: user.role,
+						code,
+						expires: Date.now() + 5 * 60 * 1000
+				};
 
-			logger.info(`User ${email} logged in successfully`);
-			res.json({ success: true, message: "Login successful." });
+				await transporter.sendMail({
+						from: process.env.EMAIL_USER,
+						to: user.email,
+						subject: "Your 2FA Code",
+						text: `Your 2FA code: ${code}`,
+						html: `<p>Your 2FA code: <b>${code}</b></p>`
+				});
+
+				logger.info(`2FA code sent to ${user.email}`);
+				return res.json({ twoFA: true, message: "Two-factor authentication required." });
+			} else {
+				req.session.user = {
+						id: user.id,
+						email: user.email,
+						role: user.role,
+						firstName: user.firstName,
+						lastName: user.lastName
+				};
+				logger.info(`User ${email} logged in successfully`);
+				res.json({ success: true, message: "Login successful." });
+			}
 		} else {
 			logger.warn(`Login failed for user ${email}`);
 			res.status(401).json({ error: "Invalid email or password." });
@@ -191,7 +257,7 @@ router.get('/profile', async (req, res) => {
 			firstName: user.firstName,
 			lastName: user.lastName,
 			email: user.email,
-			twoFAEnabled: !!user.twoFAEnabled // or whatever your 2FA field is
+			two_factor_enabled: !!user.two_factor_enabled
 		});
 	} catch (error) {
 		logger.error('Error getting user: ' + error.stack);
@@ -206,7 +272,7 @@ router.post('/profile/2fa', async (req, res) => {
 
 	try {
 		await db.setTwoFA(req.session.user.id, true);
-		req.session.user.twoFAEnabled = true;
+		req.session.user.two_factor_enabled = true;
 		res.json({ success: true });
 	} catch (error) {
 		logger.error('Error enabling 2FA: ' + error.stack);
@@ -221,7 +287,7 @@ router.delete('/profile/2fa', async (req, res) => {
 
 	try {
 		await db.setTwoFA(req.session.user.id, false);
-		req.session.user.twoFAEnabled = false;
+		req.session.user.two_factor_enabled = false;
 		res.json({ success: true });
 	} catch (error) {
 		logger.error('Error disabling 2FA: ' + error.stack);

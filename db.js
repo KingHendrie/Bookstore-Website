@@ -98,7 +98,7 @@ const db = {
   getUserById: async (id) => {
     try {
       return await knex('user')
-        .select('id', 'firstName', 'lastName', 'email', 'two_factor_enabled')
+        .select('id', 'firstName', 'lastName', 'email', 'role', 'two_factor_enabled')
         .where({ id })
         .first();
     } catch (error) {
@@ -123,7 +123,7 @@ const db = {
     try {
       const offset = (page - 1) * pageSize;
       const users = await knex('user')
-        .select('id', 'firstName', 'lastName', 'email', 'role')
+        .select('id', 'firstName', 'lastName', 'email', 'role', 'two_factor_enabled')
         .limit(pageSize)
         .offset(offset);
   
