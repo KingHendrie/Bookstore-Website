@@ -21,9 +21,9 @@ function openCreateUserModal(e) {
 	modal.classList.remove('d-none');
 	document.body.style.overflow = 'hidden';
 	document.getElementById('firstName').focus();
- }
+}
 
- function openEditUserModal(user) {
+function openEditUserModal(user) {
 	modalTitle.textContent = 'Edit User';
 	modalSubmitBtn.textContent = 'Update';
 	userIdInput.value = user.id;
@@ -39,7 +39,7 @@ function openCreateUserModal(e) {
 	modal.classList.remove('d-none');
 	document.body.style.overflow = 'hidden';
 	document.getElementById('firstName').focus();
- }
+}
 
 function closeCreateUserModal() {
 	modal.classList.add('d-none');

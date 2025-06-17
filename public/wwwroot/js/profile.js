@@ -7,8 +7,8 @@ async function populateProfile() {
 		document.getElementById('profileLastName').value = user.lastName || '';
 		document.getElementById('profileEmail').value = user.email || '';
 		render2FAStatus(user.twoFAEnabled);
-	} catch (err) {
-		document.getElementById('2fa-status').textContent = 'Unable to load profile.';
+	} catch (error) {
+		showToast('Unable to load profile.', 'error');
 	}
 }
  
@@ -33,8 +33,6 @@ function render2FAStatus(twoFAEnabled) {
 
 document.getElementById('profileInfoForm').addEventListener('submit', async function(e) {
 	e.preventDefault();
-	const msg = document.getElementById('profile-info-message');
-	msg.style.display = 'none';
 
 	const data = {
 		firstName: this.firstName.value.trim(),
@@ -48,25 +46,21 @@ document.getElementById('profileInfoForm').addEventListener('submit', async func
 			body: JSON.stringify(data)
 		});
 		const json = await res.json();
-		msg.textContent = json.success ? 'Profile updated!' : (json.error || 'Could not update profile.');
-		msg.className = 'alert mt-3' + (json.success ? ' alert-success' : ' alert-danger');
-		msg.style.display = '';
-	} catch (err) {
-		msg.textContent = 'Could not update profile.';
-		msg.className = 'alert mt-3 alert-danger';
-		msg.style.display = '';
+		if(json.success) {
+			showToast('Profile updated!', 'success');
+		} else {
+			showToast(json.error || 'Could not update profile.', 'error');
+		}
+	} catch (error) {
+		showToast('Could not update profile.', 'error');
 	}
 });
 
 document.getElementById('profilePasswordForm').addEventListener('submit', async function(e) {
 	e.preventDefault();
-	const msg = document.getElementById('profile-password-message');
-	msg.style.display = 'none';
 
 	if (this.newPassword.value !== this.confirmNewPassword.value) {
-		msg.textContent = 'New passwords do not match.';
-		msg.className = 'alert mt-3 alert-danger';
-		msg.style.display = '';
+		showToast('New passwords do not match.', 'error');
 		return;
 	}
 
@@ -82,48 +76,44 @@ document.getElementById('profilePasswordForm').addEventListener('submit', async 
 			body: JSON.stringify(data)
 		});
 		const json = await res.json();
-		msg.textContent = json.success ? 'Password updated!' : (json.error || 'Could not change password.');
-		msg.className = 'alert mt-3' + (json.success ? ' alert-success' : ' alert-danger');
-		msg.style.display = '';
-		if (json.success) this.reset();
-	} catch (err) {
-		msg.textContent = 'Could not change password.';
-		msg.className = 'alert mt-3 alert-danger';
-		msg.style.display = '';
+		if(json.success) {
+			showToast('Password updated!', 'success');
+			this.reset();
+		} else {
+			showToast(json.error || 'Could not change password.', 'error');
+		}
+	} catch (error) {
+		showToast('Could not change password.', 'error');
 	}
 });
 
 async function enable2FA() {
-	const msg = document.getElementById('profile-2fa-message');
-	msg.style.display = 'none';
 	try {
 		const res = await fetch('/api/profile/2fa', { method: 'POST' });
 		const json = await res.json();
-		msg.textContent = json.success ? '2FA enabled! (Further setup may be required)' : (json.error || 'Could not enable 2FA.');
-		msg.className = 'alert mt-3' + (json.success ? ' alert-success' : ' alert-danger');
-		msg.style.display = '';
-		if (json.success) render2FAStatus(true);
-	} catch (err) {
-		msg.textContent = 'Could not enable 2FA.';
-		msg.className = 'alert mt-3 alert-danger';
-		msg.style.display = '';
+		if(json.success) {
+			showToast('2FA enabled! (Further setup may be required)', 'success');
+			render2FAStatus(true);
+		} else {
+			showToast(json.error || 'Could not enable 2FA.', 'error');
+		}
+	} catch (error) {
+		showToast('Could not enable 2FA.', 'error');
 	}
 }
  
 async function disable2FA() {
-	const msg = document.getElementById('profile-2fa-message');
-	msg.style.display = 'none';
 	try {
 		const res = await fetch('/api/profile/2fa', { method: 'DELETE' });
 		const json = await res.json();
-		msg.textContent = json.success ? '2FA disabled.' : (json.error || 'Could not disable 2FA.');
-		msg.className = 'alert mt-3' + (json.success ? ' alert-success' : ' alert-danger');
-		msg.style.display = '';
-		if (json.success) render2FAStatus(false);
-	} catch (err) {
-		msg.textContent = 'Could not disable 2FA.';
-		msg.className = 'alert mt-3 alert-danger';
-		msg.style.display = '';
+		if(json.success) {
+			showToast('2FA disabled.', 'success');
+			render2FAStatus(false);
+		} else {
+			showToast(json.error || 'Could not disable 2FA.', 'error');
+		}
+	} catch (error) {
+		showToast('Could not disable 2FA.', 'error');
 	}
 }
 
