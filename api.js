@@ -137,4 +137,16 @@ router.post('/logout', async (req, res) => {
 	});
 });
 
+router.get('/users', async (req, res) => {
+	const { page = 1, pageSize = 10 } = req.body;
+
+	try {
+		const users = await db.getUsersPaginated(page, pageSize);
+		res.json(users);
+	} catch (error) {
+		logger.error('Error fetching users:', error);
+		res.status(500).json({ error: "Failed to fetch users." });
+	}
+});
+
 module.exports = router;

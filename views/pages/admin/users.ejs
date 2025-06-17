@@ -1,0 +1,34 @@
+<div class="users-container">
+	<section class="users">
+		<h2>Manage Users</h2>
+		<div class="mb-3 d-flex justify-content-between">
+			<button onclick="loadUsers(window.currentPage - 1)" id="prev-btn" class="btn" disabled>Previous</button>
+			<span id="page-info"></span>
+			<button onclick="loadUsers(window.currentPage + 1)" id="next-btn" class="btn" disabled>Next</button>
+		</div>
+		<div class="users-table">
+			<table class="table">
+				<thead>
+					<tr>
+						<th>Id</th>
+						<th>First Name</th>
+						<th>Last Name</th>
+						<th>Email</th>
+						<th>Role</th>
+					</tr>
+				</thead>
+				<tbody id="users-table-body">
+					<!-- User rows will be dynamically inserted here -->
+				</tbody>
+			</table>
+			<div id="users-loading" class="text-center" style="display:none;">
+				<span class="spinner-border"></span> Loading users...
+			</div>
+			<div id="users-error" class="alert alert-danger mt-3" style="display:none;">
+				Could not load users.
+			</div>
+		</div>
+	</section>
+</div>
+
+<script src="/wwwroot/js/users.js"></script>

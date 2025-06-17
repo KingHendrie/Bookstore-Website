@@ -77,6 +77,29 @@ const db = {
       logger.error('Error creating user:', error);
       throw error;
     }
+  },
+
+  getUsersPaginated: async (page = 1, pageSize = 10) => {
+    try {
+      const offset = (page - 1) * pageSize;
+      const users = await knex('user')
+        .select('id', 'firstName', 'lastName', 'email', 'role')
+        .limit(pageSize)
+        .offset(offset);
+  
+      const [{ count }] = await knex('user').count('* as count');
+  
+      return {
+        users,
+        total: Number(count),
+        page,
+        pageSize,
+        totalPages: Math.ceil(Number(count) / pageSize)
+      };
+    } catch (error) {
+      logger.error('Error fetching paginated users:', error);
+      throw error;
+    }
   }
 };
 
