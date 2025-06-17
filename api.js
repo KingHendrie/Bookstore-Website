@@ -61,7 +61,7 @@ router.post('/send-contact', async (req, res) => {
 });
 
 router.post('/register', async (req, res) => {
-	const { firstName, lastName, email, password } = req.body;
+	const { firstName, lastName, email, password, role = user } = req.body;
 	if (!firstName || !lastName || !email || !password) {
 		logger.warn('Registration attempt with missing fields');
 		return res.status(400).json({ error: "Missing required fields." });
@@ -80,7 +80,7 @@ router.post('/register', async (req, res) => {
 	}
 
 	try {
-		const user = await db.createUser(firstName, lastName, email, password);
+		const user = await db.createUser(firstName, lastName, email, password, role);
 		if (user) {
 			logger.info(`User ${email} registered successfully`);
 			res.json({ success: true, message: "Registration successful." });

@@ -1,12 +1,11 @@
 <div class="users-container">
 	<section class="users">
-		<h2>Manage Users</h2>
-		<div class="mb-3 d-flex justify-content-between">
-			<button onclick="loadUsers(window.currentPage - 1)" id="prev-btn" class="btn" disabled>Previous</button>
-			<span id="page-info"></span>
-			<button onclick="loadUsers(window.currentPage + 1)" id="next-btn" class="btn" disabled>Next</button>
+		<h2 class="mb-3">Manage Users</h2>
+		<div class="mb-3 d-flex">
+			<a class="btn" href="/admin">Back</a>
+			<a class="btn ms-1" href="/admin/users/create">Create New User</a>
 		</div>
-		<div class="users-table">
+		<div class="users-table mb-3">
 			<table class="table">
 				<thead>
 					<tr>
@@ -28,7 +27,49 @@
 				Could not load users.
 			</div>
 		</div>
+		<div class="mb-3 d-flex justify-content-between">
+			<button onclick="loadUsers(window.currentPage - 1)" id="prev-btn" class="btn" disabled>Previous</button>
+			<span id="page-info"></span>
+			<button onclick="loadUsers(window.currentPage + 1)" id="next-btn" class="btn" disabled>Next</button>
+		</div>
 	</section>
+</div>
+
+<div id="createUserModal" class="modal d-none">
+	<div class="modal-backdrop"></div>
+	<div class="modal-content">
+		<button class="modal-close" id="closeCreateUserModal" aria-label="Close">&times;</button>
+		<h3><span id="modalTitle">Create New User</span></h3>
+		<form id="createUserForm" class="input-form">
+			<input type="hidden" id="userId" name="userId">
+			
+			<label for="firstName">First Name</label>
+			<input id="firstName" name="firstName" required>
+
+			<label for="lastName">Last Name</label>
+			<input id="lastName" name="lastName" required>
+
+			<label for="email">Email</label>
+			<input id="email" name="email" type="email" required>
+
+			<label for="password">Password</label>
+			<input id="password" name="password" type="password" required>
+
+			<label for="role">Role</label>
+			<select id="role" name="role" required>
+				<option value="user">User</option>
+				<option value="admin">Admin</option>
+			</select>
+
+			<div class="d-flex justify-content-between mt-3">
+				<button type="button" class="btn" id="cancelCreateUser">Cancel</button>
+				<button type="submit" class="btn" id="modalSubmitBtn">Create</button>
+			</div>
+			<div id="create-user-error" class="alert alert-danger mt-3" style="display:none;">
+				Could not create user.
+			</div>
+		</form>
+	</div>
 </div>
 
 <script src="/wwwroot/js/users.js"></script>

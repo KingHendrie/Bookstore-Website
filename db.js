@@ -59,7 +59,7 @@ const db = {
     }
   },
 
-  createUser: async (firstName, lastName, email, password) => {
+  createUser: async (firstName, lastName, email, password, role) => {
     try {
       const passwordHash = await bcrypt.hash(password, 10);
       const newUser = {
@@ -67,7 +67,7 @@ const db = {
         lastName,
         email,
         passwordHash,
-        role: 'user'
+        role
       };
       logger.info('Creating new user:', newUser);
       const result = await knex('user').insert(newUser);

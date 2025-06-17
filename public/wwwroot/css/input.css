@@ -19,7 +19,8 @@
 }
 
 .input-form input,
-.input-form textarea {
+.input-form textarea,
+.input-form select {
    width: 100%;
    padding: 10px;
    margin-bottom: 16px;
@@ -29,6 +30,17 @@
    font-family: 'Roboto', Arial, sans-serif;
    background: var(--color-actions);
    color: var(--color-text);
+}
+
+.input-form select {
+   appearance: none;
+   -webkit-appearance: none;
+   -moz-appearance: none;
+   background-image: url("data:image/svg+xml;utf8,<svg fill='gray' height='18' viewBox='0 0 24 24' width='18' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
+   background-repeat: no-repeat;
+   background-position: right 10px center;
+   background-size: 18px 18px;
+   cursor: pointer;
 }
 
 .input-form textarea {
@@ -60,6 +72,13 @@
    transition: background 0.2s, color 0.2s;
    text-decoration: none;
    margin-top: 18px;
+}
+
+.input-form input:focus,
+.input-form textarea:focus,
+.input-form select:focus {
+   outline: 2px solid var(--color-accent);
+   border-color: var(--color-accent);
 }
 
 .input-form button:hover,
