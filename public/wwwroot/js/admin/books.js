@@ -66,9 +66,9 @@ async function loadBooks(page = 1, pageSize = 10) {
 		const tbody = document.getElementById('books-table-body');
 		tbody.innerHTML = '';
 		if (data.books.length === 0) {
-			tbody.innerHTML = '<tr><td colspan="8" class="text-center">No books found.</td></tr>';
+			tbody.innerHTML = '<tr><td colspan="7" class="text-center">No books found.</td></tr>';
 		} else {
-			data.books.foreach(book => {
+			data.books.forEach(book => {
 				const row = document.createElement('tr');
 				row.innerHTML = `
 					<td>${book.id}</td>

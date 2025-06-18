@@ -104,6 +104,9 @@
 				if (err) err.style.display = 'none';
 			}
 		},
+		toast(message, type = 'info') {
+			if (typeof showToast === "function") showToast(message, type);
+	  	},
 		bindFormSubmit(formId, getSubmitOptions, onSuccess, errorDivId) {
 			const form = document.getElementById(formId);
 			if (!form) return;
@@ -121,20 +124,23 @@
 					const json = await res.json();
 					if (res.ok && (json.success || json.id)) {
 						if (typeof onSuccess === 'function') onSuccess(json);
+						Modal.toast('Action successful!', 'success');
 					} else {
 						if (errorDiv) {
-							errorDiv.textContent = json.error || 'An error occurred.';
-							errorDiv.style.display = '';
+								errorDiv.textContent = json.error || 'An error occurred.';
+								errorDiv.style.display = '';
 						}
+						Modal.toast(json.error || 'An error occurred.', 'error');
 					}
 				} catch (err) {
 					if (errorDiv) {
 						errorDiv.textContent = 'An error occurred.';
 						errorDiv.style.display = '';
 					}
+					Modal.toast('An error occurred.', 'error');
 				}
 			});
-		}
+	  	}
 	};
 
 	window.Modal = Modal;

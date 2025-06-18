@@ -381,7 +381,7 @@ router.put('/users/:id', async (req, res) => {
 
 // Admin Books
 router.get('/books', async (req, res) => {
-	const { page = 1, pageSize = 10 } = req.body;
+	const { page = 1, pageSize = 10 } = req.query;
 
 	try {
 		const books = await db.getBooksPaginated(page, pageSize);
@@ -395,7 +395,7 @@ router.get('/books', async (req, res) => {
 router.post('/books/add', async (req, res) => {
 	const { title, author, genre, isbn, publisher, description, price, stockQuantity } = req.body;
 
-	if (!title || !author || !genre || !isbn || !publisher || !description || !price || !stockQuantity) {
+	if (!title || !author || !genre || !isbn || !publisher || !price || !stockQuantity) {
 		logger.warn('Book add attempt with missing fields');
 		return res.status(400).json({ error: "Missing required fields." });
 	}
