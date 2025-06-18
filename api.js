@@ -106,7 +106,7 @@ router.post('/send-contact', async (req, res) => {
 });
 
 router.post('/register', async (req, res) => {
-	const { firstName, lastName, email, password, role = user } = req.body;
+	const { firstName, lastName, email, password, role = 'user' } = req.body;
 	if (!firstName || !lastName || !email || !password) {
 		logger.warn('Registration attempt with missing fields');
 		return res.status(400).json({ error: "Missing required fields." });
