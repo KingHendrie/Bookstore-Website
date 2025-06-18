@@ -5,43 +5,40 @@ function showLoading(show = true) {
 
 function show2FAModal(email) {
 	showLoading(true);
-	document.getElementById('twoFACode').value = "";
-	document.getElementById('twoFA-error').style.display = 'none';
-	document.getElementById('twoFAModal').classList.remove('d-none');
-	document.body.style.overflow = 'hidden';
-	document.getElementById('twoFACode').focus();
+	Modal.setupFormModal({
+		modalId: 'twoFAModal',
+		title: 'Two-Factor Authentication',
+		submitText: 'Verify',
+		fields: { twoFACode: '' },
+		errorDivId: 'twoFA-error'
+	});
+	Modal.open('twoFAModal', (modal) => {
+		const input = modal.querySelector('#twoFACode');
+		if (input) input.focus();
+	});
 	showLoading(false);
 }
 
 function hide2FAModal() {
-	document.getElementById('twoFAModal').classList.add('d-none');
-	document.body.style.overflow = '';
+	Modal.close('twoFAModal');
 }
 
-document.getElementById('close2FAModal').onclick =
-document.getElementById('cancel2FA').onclick = hide2FAModal;
-document.querySelector('#twoFAModal .modal-backdrop').onclick = hide2FAModal;
-document.addEventListener('keydown', function(e) {
-	if (!document.getElementById('twoFAModal').classList.contains('d-none') && e.key === 'Escape') hide2FAModal();
-});
+Modal.bind('twoFAModal', { closeOnBackdrop: true, closeOnEscape: true });
 
 async function loginUser() {
 	showLoading(true);
 	const email = document.getElementById('email').value;
 	const password = document.getElementById('password').value;
- 
+
 	const response = await fetch('/api/login', {
 		method: 'POST',
 		headers: { 'Content-Type': 'application/json' },
-		body: JSON.stringify({
-			email: email, 
-			password: password,
-		})
+		body: JSON.stringify({ email, password })
 	});
- 
+
 	const result = await response.json();
 	showLoading(false);
- 
+
 	if (result.success) {
 		showToast('Login successful!', 'success');
 		window.location.href = '/profile';
@@ -53,38 +50,30 @@ async function loginUser() {
 	}
 }
 
-document.getElementById('twoFAForm').addEventListener('submit', async function(e) {
-	e.preventDefault();
-	showLoading(true);
-	const code = document.getElementById('twoFACode').value;
-	const errorDiv = document.getElementById('twoFA-error');
-	errorDiv.style.display = 'none';
-
-	const response = await fetch('/api/verify-2fa', {
+Modal.bindFormSubmit('twoFAForm', (form) => {
+	return {
+		url: '/api/verify-2fa',
 		method: 'POST',
-		headers: { 'Content-Type': 'application/json' },
-		body: JSON.stringify({ code })
-	});
-	const result = await response.json();
-	showLoading(false);
-
+		data: { code: form.twoFACode.value }
+	};
+}, (result) => {
 	if (result.success) {
 		showToast('2FA verified. Login complete.', 'success');
 		hide2FAModal();
 		window.location.href = '/profile';
 	} else {
+		const errorDiv = document.getElementById('twoFA-error');
 		errorDiv.textContent = result.error || '2FA verification failed.';
 		errorDiv.style.display = '';
 		showToast(result.error || '2FA verification failed.', 'error');
 	}
-});
+}, 'twoFA-error');
 
 async function singOut() {
 	const response = await fetch('/api/logout', {
 		method: 'POST',
 		headers: { 'Content-Type': 'application/json' }
 	});
-
 	const result = await response.json();
 	if (result.success) {
 		showToast('Logged out successfully', 'success');
