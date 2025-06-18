@@ -14,17 +14,7 @@ async function checkConnection() {
 }
 
 const db = {
-  getUsers: async () => {
-    try {
-      const users = await knex('users').select('*');
-      logger.info('Fetched all users.');
-      return users;
-    } catch (error) {
-      logger.error('Error fetching users:', error);
-      throw error;
-    }
-  },
-
+  // User Stuff
   checkUserExists: async (email) => {
     try {
       const user = await knex('user').select('*').where({ email }).first();
@@ -37,6 +27,27 @@ const db = {
       }
     } catch (error) {
       logger.error('Error checking if user exists:', error);
+      throw error;
+    }
+  },
+
+  createUser: async (firstName, lastName, email, password, role) => {
+    try {
+      const passwordHash = await bcrypt.hash(password, 10);
+      const newUser = {
+        firstName,
+        lastName,
+        email,
+        passwordHash,
+        role
+      };
+
+      logger.info('Creating new user:', newUser);
+      const result = await knex('user').insert(newUser);
+      logger.info('User created:', newUser);
+      return result;
+    } catch (error) {
+      logger.error('Error creating user:', error);
       throw error;
     }
   },
@@ -55,42 +66,6 @@ const db = {
       }
     } catch (error) {
       logger.error('Error checking user credentials:', error);
-      throw error;
-    }
-  },
-
-  createUser: async (firstName, lastName, email, password, role) => {
-    try {
-      const passwordHash = await bcrypt.hash(password, 10);
-      const newUser = {
-        firstName,
-        lastName,
-        email,
-        passwordHash,
-        role
-      };
-      logger.info('Creating new user:', newUser);
-      const result = await knex('user').insert(newUser);
-      logger.info('User created:', newUser);
-      return result;
-    } catch (error) {
-      logger.error('Error creating user:', error);
-      throw error;
-    }
-  },
-
-  updateUser: async (id, { firstName, lastName, email, password, role }) => {
-    try {
-      const updateData = { firstName, lastName, email, role };
-      if (password && password.trim() !== "") {
-        updateData.passwordHash = await bcrypt.hash(password, 10);
-      }
-      const result = await knex('user')
-        .where({ id })
-        .update(updateData);
-      return result > 0;
-    } catch (error) {
-      logger.error('Error updating user:', error);
       throw error;
     }
   },
@@ -131,6 +106,7 @@ const db = {
     }
   },
 
+  // Admin Users
   getUsersPaginated: async (page = 1, pageSize = 10) => {
     try {
       const offset = (page - 1) * pageSize;
@@ -150,6 +126,82 @@ const db = {
       };
     } catch (error) {
       logger.error('Error fetching paginated users:', error);
+      throw error;
+    }
+  },
+
+  updateUser: async (id, { firstName, lastName, email, password, role }) => {
+    try {
+      const updateData = { firstName, lastName, email, role };
+      if (password && password.trim() !== "") {
+        updateData.passwordHash = await bcrypt.hash(password, 10);
+      }
+      const result = await knex('user')
+        .where({ id })
+        .update(updateData);
+      return result > 0;
+    } catch (error) {
+      logger.error('Error updating user:', error);
+      throw error;
+    }
+  },
+
+  // Admin Books
+  getBooksPaginated: async (page = 1, pageSize = 10) => {
+    try {
+      const offset = (page - 1) * pageSize;
+      const books = await knex('book')
+        .select('id', 'title', 'author', 'genre', 'isbn', 'publisher', 'stockQuantity')
+        .limit(pageSize)
+        .offset(offset);
+
+      const [{ count }] = await knex('book').count('* as count');
+
+      return {
+        books,
+        total: Number(count),
+        page,
+        pageSize,
+        totalPages: Math.ceil(Number(count) / pageSize)
+      };
+    } catch (error) {
+      logger.error('Error fetching paginated books:', error);
+      throw error;
+    }
+  },
+
+  addBook: async (title, author, genre, isbn, publisher, description, price, stockQuantity) => {
+    try {
+      const newBook = {
+        title,
+        author,
+        genre,
+        isbn,
+        publisher,
+        description,
+        price,
+        stockQuantity
+      };
+
+      logger.info('Adding new book:', newBook);
+      const result = await knex('book').insert(newBook);
+      logger.info('Book added:', newBook);
+      return result;
+    } catch (error) {
+      logger.error('Error adding book:', error);
+      throw error;
+    }
+  },
+
+  updateBook: async (id, { title, author, genre, isbn, publisher, description, price, stockQuantity }) => {
+    try {
+      const updatedData = { title, author, genre, isbn, publisher, description, price, stockQuantity };
+      const result = await knex('book')
+        .where({ id })
+        .update(updatedData);
+      return result > 0;
+    } catch (error) {
+      logger.error('Error updating book:', error);
       throw error;
     }
   }
