@@ -336,6 +336,28 @@ router.put('/profile/password', async (req, res) => {
 	}
 });
 
+// Public Books
+router.get('/books', async (req, res) => {
+	try {
+		const limit = parseInt(req.query.limit, 10) || 8;
+		const books = await db.getBooksPaginated(1, limit);
+		res.json(books.books);
+	} catch (error) {
+		logger.error('Error fetching books:', error);
+		res.status(500).json({ error: 'Failed to fetch books.' });
+	}
+});
+ 
+router.get('/categories', async (req, res) => {
+	try {
+		const categories = await db.getCategories();
+		res.json(categories);
+	} catch (error) {
+		logger.error('Error fetching categories:', error);
+		res.status(500).json({ error: 'Failed to fetch categories.' });
+	}
+});
+
 // Admin Users
 router.get('/users', async (req, res) => {
 	const { page = 1, pageSize = 10 } = req.body;

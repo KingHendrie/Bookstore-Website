@@ -106,6 +106,20 @@ const db = {
     }
   },
 
+  // Public Books
+  getCategories: async () => {
+    try {
+      const categories = await knex('book')
+        .distinct('genre as name')
+        .whereNotNull('genre')
+        .orderBy('genre', 'asc');
+      return categories;
+    } catch (error) {
+      logger.error('Error fetching categories:', error);
+      throw error;
+    }
+  },
+
   // Admin Users
   getUsersPaginated: async (page = 1, pageSize = 10) => {
     try {
