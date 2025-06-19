@@ -53,7 +53,7 @@ async function renderWithLayout(res, page, options = {}) {
   const user = res.req.session?.user;
   options.isAdmin = user?.role === 'admin';
 
-  // Protect specific paths (e.g., /admin and /profile)
+  // Protect specific paths (e.g., /profile and /admin)
   const protectedPaths = ['/profile', '/admin'];
   const currentPath = res.req.path;
 

@@ -111,7 +111,7 @@ async function loadBooks(page = 1, pageSize = 10) {
 					<td>${book.publisher}</td>
 					<td>${book.price}</td>
 					<td>${book.stockQuantity}</td>
-					<td><a class="text-d-none" href="/admin/books/reviews?id=${book.id}">Reviews</a></td>
+					<td><a class="text-d-none" href="/admin/reviews?id=${book.id}">Reviews</a></td>
 				`;
 				row.style.cursor = 'pointer';
 				row.addEventListener('click', (event) => {
