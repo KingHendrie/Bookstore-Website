@@ -2,7 +2,7 @@ async function loadBooksTiles() {
 	const booksList = document.getElementById('books-list');
 	booksList.innerHTML = '<div>Loading...</div>';
 	try {
-		const res = await fetch('/api/books?limit=8');
+		const res = await fetch('/api/home-books?limit=8');
 		const books = await res.json();
 		if (!books.length) {
 			booksList.innerHTML = '<div>No books found.</div>';
@@ -49,7 +49,7 @@ async function loadBooksTiles() {
 	
 			const link = document.createElement('a');
 			link.className = 'book-link';
-			link.href = `/books/${book.id}`;
+			link.href = `/books?id=${book.id}`;
 			link.appendChild(card);
 			link.appendChild(img);
 	

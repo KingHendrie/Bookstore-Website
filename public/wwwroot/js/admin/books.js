@@ -1,5 +1,16 @@
 Modal.bind('addBookModal', { closeOnBackdrop: true, closeOnEscape: true });
-Modal.bindOpen('addBookModal', 'a[href="/admin/books/create"]', () =>
+
+async function populateGenreSelect(selectedId = null) {
+	const res = await fetch('/api/categories');
+	const genres = await res.json();
+	const select = document.getElementById('genreId');
+	select.innerHTML = genres.map(g =>
+	  `<option value="${g.id}" ${selectedId == g.id ? "selected" : ""}>${g.name}</option>`
+	).join('');
+}
+
+Modal.bindOpen('addBookModal', 'a[href="/admin/books/create"]', () => {
+	populateGenreSelect();
 	Modal.setupFormModal({
 		modalId: 'addBookModal',
 		title: 'Add New Book',
@@ -7,10 +18,11 @@ Modal.bindOpen('addBookModal', 'a[href="/admin/books/create"]', () =>
 		fields: { bookId: '' },
 		errorDivId: 'add-book-error',
 		resetForm: true
-	})
-);
+	});
+});
 
 window.openEditBookModal = function(book) {
+	populateGenreSelect(book.genreId);
 	Modal.setupFormModal({
 		modalId: 'addBookModal',
 		title: 'Edit Book',
@@ -19,7 +31,7 @@ window.openEditBookModal = function(book) {
 			bookId: book.id,
 			title: book.title,
 			author: book.author,
-			genre: book.genre,
+			genreId: book.genreId,
 			isbn: book.isbn,
 			publisher: book.publisher,
 			description: book.description,
@@ -27,7 +39,7 @@ window.openEditBookModal = function(book) {
 			stockQuantity: book.stockQuantity
 		},
 		errorDivId: 'add-book-error'
-	});
+  	});
 	const preview = document.getElementById('bookImagePreview');
 	const input = document.getElementById('bookImage');
 	if (book.image_base64) {
@@ -70,7 +82,7 @@ Modal.bindFormSubmit('addBookForm', (form) => {
 		data: {
 			title: form.title.value.trim(),
 			author: form.author.value.trim(),
-			genre: form.genre.value.trim(),
+			genre: form.genreId.value,
 			isbn: form.isbn.value.trim(),
 			publisher: form.publisher.value.trim(),
 			description: form.description.value.trim(),
@@ -95,6 +107,7 @@ async function loadBooks(page = 1, pageSize = 10) {
 		const res = await fetch(`/api/books?page=${page}&pageSize=${pageSize}`);
 		if (!res.ok) throw new Error('Network error');
 		const data = await res.json();
+		console.log(data);
 		const tbody = document.getElementById('books-table-body');
 		tbody.innerHTML = '';
 		if (data.books.length === 0) {

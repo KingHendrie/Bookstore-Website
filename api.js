@@ -337,7 +337,7 @@ router.put('/profile/password', async (req, res) => {
 });
 
 // Public Books
-router.get('/books', async (req, res) => {
+router.get('/home-books', async (req, res) => {
 	try {
 		const limit = parseInt(req.query.limit, 10) || 8;
 		const books = await db.getBooksPaginated(1, limit);
@@ -402,6 +402,43 @@ router.put('/users/:id', async (req, res) => {
 	}
 });
 
+// Admin Genres
+router.get('/genres', async (req, res) => {
+	const { page = 1, pageSize = 10 } = req.query;
+	try {
+		const result = await db.getGenresPaginated(page, pageSize);
+		res.json(result);
+	} catch (error) {
+		logger.error('Error fetching genres:', error);
+		res.status(500).json({ error: "Failed to fetch genres." });
+	}
+});
+
+router.post('/genres/add', async (req, res) => {
+	const { genre } = req.body;
+	if (!genre) return res.status(400).json({ error: "Missing genre." });
+	try {
+		const [id] = await db.addGenre(genre);
+		res.json({ success: true, id });
+	} catch (error) {
+		logger.error('Error adding genre:', error);
+		res.status(500).json({ error: "Failed to add genre." });
+	}
+});
+
+router.put('/genres/:id', async (req, res) => {
+	const { id } = req.params;
+	const { genre } = req.body;
+	if (!genre) return res.status(400).json({ error: "Missing genre." });
+	try {
+		const updated = await db.updateGenre(id, genre);
+		res.json({ success: !!updated });
+	} catch (error) {
+		logger.error('Error updating genre:', error);
+		res.status(500).json({ error: "Failed to update genre." });
+	}
+});
+
 // Admin Books
 router.get('/books', async (req, res) => {
 	const { page = 1, pageSize = 10 } = req.query;
@@ -416,9 +453,9 @@ router.get('/books', async (req, res) => {
 });
 
 router.post('/books/add', async (req, res) => {
-	const { title, author, genre, isbn, publisher, description, price, stockQuantity, image_base64 } = req.body;
+	const { title, author, genreId, isbn, publisher, description, price, stockQuantity, image_base64 } = req.body;
 
-	if (!title || !author || !genre || !isbn || !publisher || !price || !stockQuantity) {
+	if (!title || !author || !genreId || !isbn || !publisher || !price || !stockQuantity) {
 		logger.warn('Book add attempt with missing fields');
 		return res.status(400).json({ error: "Missing required fields." });
 	}
@@ -427,7 +464,7 @@ router.post('/books/add', async (req, res) => {
 		const [bookId] = await db.addBook(
 			title, 
 			author, 
-			genre, 
+			genreId, 
 			isbn, 
 			publisher, 
 			description, 
@@ -463,9 +500,9 @@ router.post('/books/add', async (req, res) => {
 
 router.put('/books/:id', async (req, res) => {
 	const { id } = req.params;
-	const { title, author, genre, isbn, publisher, description, price, stockQuantity, image_base64 } = req.body;
+	const { title, author, genreId, isbn, publisher, description, price, stockQuantity, image_base64 } = req.body;
 
-	if (!title || !author || !genre || !isbn || !publisher || !description || !price || !stockQuantity) {
+	if (!title || !author || !genreId || !isbn || !publisher || !description || !price || !stockQuantity) {
 		logger.warn('Book update attempt with missing fields');
 		return res.status(400).json({ error: "Missing required fields." });
 	}
@@ -474,7 +511,7 @@ router.put('/books/:id', async (req, res) => {
 		const updated = await db.updateBook(id, {
 			title,
 			author,
-			genre,
+			genreId,
 			isbn,
 			publisher,
 			description,
