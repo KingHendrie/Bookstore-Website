@@ -1,1 +1,33 @@
-<p>Test</p>
+<div class="container">
+	<section class="book-reviews">
+		<h2 class="mb-3">Book Reviews</h2>
+		<div class="mb-3 d-flex">
+			<a class="btn" href="/admin/books">Back to Books</a>
+		</div>
+		<div id="book-info" class="mb-4"></div>
+		<div class="reviews-table mb-3">
+			<table class="table">
+				<thead>
+				<tr>
+					<th>User</th>
+					<th>Rating</th>
+					<th>Comment</th>
+					<th>Date</th>
+					<th>Action</th>
+				</tr>
+				</thead>
+				<tbody id="reviews-table-body">
+				<!-- Review rows will be dynamically inserted here -->
+				</tbody>
+			</table>
+			<div id="reviews-loading" class="text-center d-none">
+				<span class="spinner-border"></span> Loading reviews...
+			</div>
+			<div id="reviews-error" class="alert alert-danger mt-3 d-none">
+				Could not load reviews.
+			</div>
+		</div>
+	</section>
+ </div>
+
+ <script src="/wwwroot/js/admin/reviews.js"></script>

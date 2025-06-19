@@ -495,4 +495,29 @@ router.put('/books/:id', async (req, res) => {
 	}
 });
 
+// Admin Reviews
+router.get('/reviews', async (req, res) => {
+	const { bookId } = req.query;
+	if (!bookId) return res.status(400).json({ error: "No bookId" });
+
+	try {
+		const reviews = await db.getReviewsByBookId(bookId);
+		res.json({ reviews });
+	} catch (error) {
+		logger.error('Error fetching reviews:', error);
+		res.status(500).json({ error: "Failed to fetch reviews." });
+	}
+});
+ 
+router.delete('/reviews/:id', async (req, res) => {
+	const { id } = req.params;
+	try {
+		await db.deleteReview(id);
+		res.json({ success: true });
+	} catch (error) {
+		logger.error('Error deleting review:', error);
+		res.status(500).json({ error: "Failed to delete review." });
+	}
+});
+
 module.exports = router;

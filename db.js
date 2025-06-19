@@ -270,6 +270,46 @@ const db = {
       logger.error('Error updating image:', error);
       throw error;
     }
+  },
+
+  // Admin Reviews
+  getReviewsByBookId: async (bookId) => {
+    try {
+      const rows = await knex('review')
+        .join('user', 'review.userId', 'user.id')
+        .select(
+          'review.id',
+          'review.rating',
+          'review.comment',
+          'review.datePosted',
+          'user.firstName',
+          'user.lastName',
+          'user.id as userId'
+        )
+        .where({ bookId })
+        .orderBy('datePosted', 'desc');
+  
+      return rows.map(r => ({
+        id: r.id,
+        userId: r.userId,
+        userName: `${r.firstName} ${r.lastName}`,
+        rating: r.rating,
+        comment: r.comment,
+        datePosted: r.datePosted
+      }));
+    } catch (error) {
+      logger.error('Error fetching reviews for book:', error);
+      throw error;
+    }
+  },
+  
+  deleteReview: async (reviewId) => {
+    try {
+      return await knex('review').where({ id: reviewId }).del();
+    } catch (error) {
+      logger.error('Error deleting review:', error);
+      throw error;
+    }
   }
 };
 
