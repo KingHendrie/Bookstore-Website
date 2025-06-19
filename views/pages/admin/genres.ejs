@@ -11,6 +11,7 @@
 				<tr>
 					<th>Id</th>
 					<th>Genre</th>
+					<th>Icon</th>
 				</tr>
 				</thead>
 				<tbody id="genres-table-body">
@@ -32,7 +33,7 @@
 	</section>
 </div>
  
- <div id="addGenreModal" class="modal d-none">
+<div id="addGenreModal" class="modal d-none">
 	<div class="modal-backdrop"></div>
 	<div class="modal-content">
 		<button class="modal-close" id="closeAddGenreModal" aria-label="Close">&times;</button>
@@ -42,6 +43,10 @@
 	
 			<label for="genre">Genre</label>
 			<input id="genre" name="genre" required>
+	
+			<label for="genre_icon">SVG Icon HTML</label>
+			<textarea id="genre_icon" name="genre_icon" rows="4" placeholder='<svg ...>...</svg>'></textarea>
+			<div id="genreIconPreview" style="margin-top:8px; min-height:32px;"></div>
 	
 			<div class="d-flex justify-content-between mt-3">
 				<button type="button" class="btn" id="cancelAddGenre">Cancel</button>

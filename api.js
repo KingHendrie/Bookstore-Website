@@ -415,10 +415,10 @@ router.get('/genres', async (req, res) => {
 });
 
 router.post('/genres/add', async (req, res) => {
-	const { genre } = req.body;
+	const { genre, genre_icon } = req.body;
 	if (!genre) return res.status(400).json({ error: "Missing genre." });
 	try {
-		const [id] = await db.addGenre(genre);
+		const [id] = await db.addGenre(genre, genre_icon);
 		res.json({ success: true, id });
 	} catch (error) {
 		logger.error('Error adding genre:', error);
@@ -428,10 +428,10 @@ router.post('/genres/add', async (req, res) => {
 
 router.put('/genres/:id', async (req, res) => {
 	const { id } = req.params;
-	const { genre } = req.body;
+	const { genre, genre_icon } = req.body;
 	if (!genre) return res.status(400).json({ error: "Missing genre." });
 	try {
-		const updated = await db.updateGenre(id, genre);
+		const updated = await db.updateGenre(id, genre, genre_icon);
 		res.json({ success: !!updated });
 	} catch (error) {
 		logger.error('Error updating genre:', error);

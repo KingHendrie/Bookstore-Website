@@ -1,14 +1,28 @@
 Modal.bind('addGenreModal', { closeOnBackdrop: true, closeOnEscape: true });
 
+function updateGenreIconPreview() {
+	const iconInput = document.getElementById('genre_icon');
+	const preview = document.getElementById('genreIconPreview');
+	preview.innerHTML = iconInput.value || '';
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+	const iconInput = document.getElementById('genre_icon');
+	if (iconInput) {
+		iconInput.addEventListener('input', updateGenreIconPreview);
+	}
+});
+
 function openAddGenreModal() {
 	Modal.setupFormModal({
 		modalId: 'addGenreModal',
 		title: 'Add Genre',
 		submitText: 'Add',
-		fields: { genreId: '', genre: '' },
+		fields: { genreId: '', genre: '', genre_icon: '' },
 		errorDivId: 'add-genre-error',
 		resetForm: true
 	});
+	updateGenreIconPreview();
 	Modal.open('addGenreModal');
 }
 
@@ -17,9 +31,11 @@ function openEditGenreModal(genre) {
 		modalId: 'addGenreModal',
 		title: 'Edit Genre',
 		submitText: 'Update',
-		fields: { genreId: genre.id, genre: genre.name },
+		fields: { genreId: genre.id, genre: genre.name, genre_icon: genre.genre_icon || '' },
 		errorDivId: 'add-genre-error'
 	});
+	document.getElementById('genre_icon').value = genre.genre_icon || '';
+	updateGenreIconPreview();
 	Modal.open('addGenreModal');
 }
 
@@ -33,7 +49,8 @@ Modal.bindFormSubmit('addGenreForm', (form) => {
 		url: genreId ? `/api/genres/${genreId}` : `/api/genres/add`,
 		method: genreId ? 'PUT' : 'POST',
 		data: {
-			genre: form.genre.value.trim()
+			genre: form.genre.value.trim(),
+			genre_icon: form.genre_icon.value.trim()
 		}
 	};
 }, () => {
@@ -54,13 +71,16 @@ async function loadGenres(page = 1, pageSize = 10) {
 		const tbody = document.getElementById('genres-table-body');
 		tbody.innerHTML = '';
 		if (!data.genres || data.genres.length === 0) {
-			tbody.innerHTML = '<tr><td colspan="2" class="text-center">No genres found.</td></tr>';
+			tbody.innerHTML = '<tr><td colspan="3" class="text-center">No genres found.</td></tr>';
 		} else {
 			data.genres.forEach(genre => {
 			const row = document.createElement('tr');
 			row.innerHTML = `
 				<td>${genre.id}</td>
 				<td>${genre.name}</td>
+				<td>
+					<span class="genre-icon-cell">${genre.genre_icon ? genre.genre_icon : ''}</span>
+				</td>
 			`;
 			row.style.cursor = 'pointer';
 			row.addEventListener('click', () => openEditGenreModal(genre));

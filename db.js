@@ -162,7 +162,7 @@ const db = {
     try {
       const offset = (page - 1) * pageSize;
       const genres = await knex('genre')
-        .select('id', 'genre as name')
+        .select('id', 'genre as name', 'genre_icon')
         .orderBy('genre', 'asc')
         .limit(pageSize)
         .offset(offset);
@@ -182,18 +182,18 @@ const db = {
     }
   },
 
-  addGenre: async (genre) => {
+  addGenre: async (genre, genre_icon) => {
     try {
-      return await knex('genre').insert({ genre });
+      return await knex('genre').insert({ genre, genre_icon });
     } catch (error) {
       logger.error('Error adding genre:', error);
       throw error;
     }
   },
 
-  updateGenre: async (id, genre) => {
+  updateGenre: async (id, genre, genre_icon) => {
     try {
-      return await knex('genre').where({ id }).update({ genre });
+      return await knex('genre').where({ id }).update({ genre, genre_icon });
     } catch (error) {
       logger.error('Error updating genre:', error);
       throw error;
