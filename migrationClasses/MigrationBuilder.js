@@ -14,6 +14,7 @@ class MigrationBuilder {
 			else if (col.type === 'integer') table.integer(col.name);
 			else if (col.type === 'decimal') table.decimal(col.name);
 			else if (col.type === 'text') table.text(col.name);
+			else if (col.type === 'longtext') table.text(col.name).longText();
 			else if (col.type === 'boolean') table.boolean(col.name);
 			else if (col.type === 'timestamp') table.timestamps(true, true);
 			else if (col.type === 'date') table.date(col.name);
