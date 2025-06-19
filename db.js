@@ -151,7 +151,18 @@ const db = {
     try {
       const offset = (page - 1) * pageSize;
       const books = await knex('book')
-        .select('id', 'title', 'author', 'genre', 'isbn', 'publisher', 'stockQuantity')
+        .leftJoin('book_image', 'book.id', 'book_image.bookId')
+        .select(
+          'book.id',
+          'book.title',
+          'book.author',
+          'book.genre',
+          'book.isbn',
+          'book.publisher',
+          'book.price',
+          'book.stockQuantity',
+          'book_image.image_base64'
+        )
         .limit(pageSize)
         .offset(offset);
 
@@ -202,6 +213,61 @@ const db = {
       return result > 0;
     } catch (error) {
       logger.error('Error updating book:', error);
+      throw error;
+    }
+  },
+  
+  addImage: async (bookId, imageBase64) => {
+    try {
+      const imageData = {
+        bookId,
+        image_base64: imageBase64
+      };
+
+      logger.info('Adding image for book ID:', bookId);
+      const result = await knex('book_image').insert(imageData);
+      logger.info('Image added for book ID:', bookId);
+      return result;
+    } catch (error) {
+      logger.error('Error adding image:', error);
+      throw error;
+    }
+  },
+
+  checkImageExists: async (bookId) => {
+    try {
+      const image = await knex('book_image')
+        .select('id')
+        .where({ bookId })
+        .first();
+      
+      if (image) {
+        logger.info(`Image exists for book ID ${bookId}.`);
+        return image.id;
+      } else {
+        logger.warn(`No image found for book ID ${bookId}.`);
+        return null;
+      }
+    } catch (error) {
+      logger.error('Error checking if image exists:', error);
+      throw error;
+    }
+  },
+  
+  updateImage: async (imageId, imageBase64) => {
+    try {
+      const imageData = {
+        image_base64: imageBase64
+      };
+
+      logger.info('Updating image for image ID:', imageId);
+      const result = await knex('book_image')
+        .where({ id: imageId })
+        .update(imageData);
+      logger.info('Image updated for image ID:', imageId);
+      return result > 0;
+    } catch (error) {
+      logger.error('Error updating image:', error);
       throw error;
     }
   }

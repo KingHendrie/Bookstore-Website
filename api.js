@@ -12,7 +12,8 @@ function generate2FACode() {
 }
 
 // Enable JSON parsing for API routes
-router.use(express.json());
+router.use(express.json({ limit: '5mb' }));
+router.use(express.urlencoded({ limit: '5mb', extended: true }));
 
 // Emails
 router.post('/send-email', async (req, res) => {
@@ -393,7 +394,7 @@ router.get('/books', async (req, res) => {
 });
 
 router.post('/books/add', async (req, res) => {
-	const { title, author, genre, isbn, publisher, description, price, stockQuantity } = req.body;
+	const { title, author, genre, isbn, publisher, description, price, stockQuantity, image_base64 } = req.body;
 
 	if (!title || !author || !genre || !isbn || !publisher || !price || !stockQuantity) {
 		logger.warn('Book add attempt with missing fields');
@@ -401,7 +402,7 @@ router.post('/books/add', async (req, res) => {
 	}
 
 	try {
-		const book = await db.addBook(
+		const [bookId] = await db.addBook(
 			title, 
 			author, 
 			genre, 
@@ -412,7 +413,20 @@ router.post('/books/add', async (req, res) => {
 			stockQuantity
 		);
 
-		if (book) {
+		if (image_base64 && bookId) {
+			const image = await db.addImage(
+				bookId,
+				image_base64
+			);
+
+			if (image) {
+				logger.info(`Image added for book "${title}"`);
+			} else {
+				logger.warn(`Failed to add image for book "${title}"`);
+			}
+	  	}
+
+		if (bookId) {
 			logger.info(`Book "${title}" added successfully`);
 			res.json({ success: true, message: "Book added." });
 		} else {
@@ -427,7 +441,7 @@ router.post('/books/add', async (req, res) => {
 
 router.put('/books/:id', async (req, res) => {
 	const { id } = req.params;
-	const { title, author, genre, isbn, publisher, description, price, stockQuantity } = req.body;
+	const { title, author, genre, isbn, publisher, description, price, stockQuantity, image_base64 } = req.body;
 
 	if (!title || !author || !genre || !isbn || !publisher || !description || !price || !stockQuantity) {
 		logger.warn('Book update attempt with missing fields');
@@ -445,6 +459,28 @@ router.put('/books/:id', async (req, res) => {
 			price,
 			stockQuantity
 		});
+
+		if (image_base64) {
+			const imageId = await db.checkImageExists(id);
+			let image;
+			if (imageId) {
+				image = await db.updateImage(
+					imageId,
+					image_base64
+				);
+			} else {
+				image = await db.addImage(
+					id,
+					image_base64
+				);
+			}
+	  
+			if (image) {
+				logger.info(`Image updated for book "${title}"`);
+			} else {
+				logger.warn(`Failed to update image for book "${title}"`);
+			}
+	  }
 
 		if (updated) {
 			logger.info(`Book "${title}" updated successfully`);

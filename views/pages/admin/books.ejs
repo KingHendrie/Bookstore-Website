@@ -15,7 +15,9 @@
 						<th>Genre</th>
 						<th>ISBN</th>
 						<th>Publisher</th>
+						<th>Price R.</th>
 						<th>Stock Quantity</th>
+						<th>Action</th>
 					</tr>
 				</thead>
 				<tbody id="books-table-body">
@@ -68,6 +70,10 @@
 
 			<label for="stockQuantity">Stock Quantity</label>
 			<input id="stockQuantity" name="stockQuantity" type="number" min="0" required>
+
+			<label for="bookImage">Book Image</label>
+			<input id="bookImage" name="bookImage" type="file" accept="image/*">
+			<img id="bookImagePreview" class="d-none" style="max-width:120px; margin-top:8px;" alt="Book Image Preview">
 
 			<div class="d-flex justify-content-between mt-3">
 				<button type="button" class="btn" id="cancelAddBook">Cancel</button>

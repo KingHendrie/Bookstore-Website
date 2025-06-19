@@ -28,8 +28,39 @@ window.openEditBookModal = function(book) {
 		},
 		errorDivId: 'add-book-error'
 	});
+	const preview = document.getElementById('bookImagePreview');
+	const input = document.getElementById('bookImage');
+	if (book.image_base64) {
+		preview.src = `data:image/jpeg;base64,${book.image_base64}`;
+		preview.classList.remove('d-none');
+		input.value = '';
+		window.bookImageBase64 = book.image_base64;
+	} else {
+		preview.src = '';
+		preview.classList.add('d-none');
+		input.value = '';
+		window.bookImageBase64 = "";
+	}
 	Modal.open('addBookModal');
 };
+
+let bookImageBase64 = "";
+document.getElementById('bookImage').addEventListener('change', function() {
+	const file = this.files[0];
+	const preview = document.getElementById('bookImagePreview');
+	if (!file) {
+		preview.classList.add('d-none');
+		bookImageBase64 = "";
+		return;
+	}
+	const reader = new FileReader();
+	reader.onload = function(e) {
+		bookImageBase64 = e.target.result.split(',')[1];
+		preview.src = e.target.result;
+		preview.classList.remove('d-none');
+	};
+	reader.readAsDataURL(file);
+});
 
 Modal.bindFormSubmit('addBookForm', (form) => {
 	const bookId = form.bookId.value;
@@ -37,14 +68,15 @@ Modal.bindFormSubmit('addBookForm', (form) => {
 		url: bookId ? `/api/books/${bookId}` : `/api/books/add`,
 		method: bookId ? 'PUT' : 'POST',
 		data: {
-		title: form.title.value.trim(),
-		author: form.author.value.trim(),
-		genre: form.genre.value.trim(),
-		isbn: form.isbn.value.trim(),
-		publisher: form.publisher.value.trim(),
-		description: form.description.value.trim(),
-		price: parseFloat(form.price.value.trim()),
-		stockQuantity: parseInt(form.stockQuantity.value.trim(), 10)
+			title: form.title.value.trim(),
+			author: form.author.value.trim(),
+			genre: form.genre.value.trim(),
+			isbn: form.isbn.value.trim(),
+			publisher: form.publisher.value.trim(),
+			description: form.description.value.trim(),
+			price: parseFloat(form.price.value.trim()),
+			stockQuantity: parseInt(form.stockQuantity.value.trim(), 10),
+			image_base64: bookImageBase64
 		}
 	};
 }, () => {
@@ -66,7 +98,7 @@ async function loadBooks(page = 1, pageSize = 10) {
 		const tbody = document.getElementById('books-table-body');
 		tbody.innerHTML = '';
 		if (data.books.length === 0) {
-			tbody.innerHTML = '<tr><td colspan="7" class="text-center">No books found.</td></tr>';
+			tbody.innerHTML = '<tr><td colspan="9" class="text-center">No books found.</td></tr>';
 		} else {
 			data.books.forEach(book => {
 				const row = document.createElement('tr');
@@ -77,10 +109,15 @@ async function loadBooks(page = 1, pageSize = 10) {
 					<td>${book.genre}</td>
 					<td>${book.isbn}</td>
 					<td>${book.publisher}</td>
+					<td>${book.price}</td>
 					<td>${book.stockQuantity}</td>
+					<td><a class="text-d-none" href="/admin/books/reviews?id=${book.id}">Reviews</a></td>
 				`;
 				row.style.cursor = 'pointer';
-				row.addEventListener('click', () => openEditBookModal(book));
+				row.addEventListener('click', (event) => {
+					if (event.target.closest('a')) return;
+					openEditBookModal(book);
+				});
 				tbody.appendChild(row);
 			});
 		}
@@ -99,5 +136,32 @@ async function loadBooks(page = 1, pageSize = 10) {
 }
 
 document.addEventListener('DOMContentLoaded', () => loadBooks(1, 10));
+
+function handleBookImageInput() {
+	const fileInput = document.getElementById('bookImage');
+	const preview = document.getElementById('bookImagePreview');
+	let base64String = '';
+
+	if (!fileInput) return '';
+
+	fileInput.addEventListener('change', function() {
+		 const file = fileInput.files[0];
+		 if (!file) {
+			  preview.style.display = 'none';
+			  base64String = '';
+			  return;
+		 }
+		 const reader = new FileReader();
+		 reader.onload = function(e) {
+			  base64String = e.target.result.split(',')[1];
+			  preview.src = e.target.result;
+			  preview.style.display = 'block';
+
+			  fileInput.dataset.base64 = base64String;
+		 };
+		 reader.readAsDataURL(file);
+	});
+}
+document.addEventListener('DOMContentLoaded', handleBookImageInput);
 
 window.loadBooks = loadBooks;
