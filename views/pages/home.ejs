@@ -7,56 +7,17 @@
 		</div>
 	</section>
 
-	<!-- Features Section -->
-	<section class="features">
-		<h2>Why Choose Us?</h2>
-		<div class="features-list">
-			<div class="feature-item">
-				<i class="icon fas fa-book"></i>
-				<h3>Wide Selection</h3>
-				<p>Thousands of books across all genres.</p>
-			</div>
-			<div class="feature-item">
-				<i class="icon fas fa-shipping-fast"></i>
-				<h3>Fast Delivery</h3>
-				<p>Get your books delivered quickly and safely.</p>
-			</div>
-			<div class="feature-item">
-				<i class="icon fas fa-star"></i>
-				<h3>Top Reviews</h3>
-				<p>Highly rated books from trusted authors.</p>
-			</div>
-		</div>
+	<!-- Featured Books Section -->
+	<section class="featured-books">
+		<h2>Featured Books</h2>
+		<div class="book-tile-group" id="books-list"></div>
 	</section>
-
+ 
 	<!-- Categories Section -->
 	<section class="categories">
 		<h2>Explore Categories</h2>
-		<div class="categories-list">
-			<div class="category-item">
-				<a href="/categories/fiction">
-					<img src="/images/fiction.jpg" alt="Fiction">
-					<%- include('../partials/book_tile', { title: 'Fiction', image: '/images/fiction.jpg', link: '/categories/fiction' }) %>
-				</a>
-			</div>
-			<div class="category-item">
-				<a href="/categories/non-fiction">
-					<img src="/images/non-fiction.jpg" alt="Non-Fiction">
-					<h3>Non-Fiction</h3>
-				</a>
-			</div>
-			<div class="category-item">
-				<a href="/categories/children">
-					<img src="/images/children.jpg" alt="Children">
-					<h3>Children</h3>
-				</a>
-			</div>
-			<div class="category-item">
-				<a href="/categories/science">
-					<img src="/images/science.jpg" alt="Science">
-					<h3>Science</h3>
-				</a>
-			</div>
-		</div>
+		<div class="categories-list" id="categories-list"></div>
 	</section>
 </div>
+
+<script src="/wwwroot/js/home.js"></script>

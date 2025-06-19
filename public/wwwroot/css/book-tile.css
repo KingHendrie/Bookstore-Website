@@ -1,0 +1,128 @@
+.book-tile-group {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 2rem;
+	justify-content: center;
+	margin: 2rem 0;
+}
+ 
+.book-tile {
+	position: relative;
+	width: 260px;
+	margin-bottom: 1.5rem;
+}
+ 
+.book-card {
+	background: var(--color-tertiary, #fff);
+	border-radius: 18px;
+	box-shadow: 0 4px 12px rgba(0,0,0,0.10);
+	padding: 1.3rem 1rem 1.5rem 1rem;
+	min-height: 190px;
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	position: relative;
+	z-index: 1;
+	transition: box-shadow 0.18s, transform 0.18s;
+}
+ 
+.book-tile:hover .book-card {
+	box-shadow: 0 8px 24px rgba(0,0,0,0.17);
+	transform: translateY(-5px) scale(1.03);
+}
+ 
+.book-image {
+	position: absolute;
+	top: -30px;
+	right: -28px;
+	width: 110px;
+	height: 150px;
+	object-fit: cover;
+	box-shadow: 0 4px 14px rgba(0,0,0,0.15);
+	border-radius: 10px;
+	background: #eee;
+	z-index: 2;
+	border: 2px solid #fff;
+	transition: box-shadow 0.24s;
+}
+ 
+.book-tile:hover .book-image {
+	box-shadow: 0 8px 28px rgba(0,0,0,0.24);
+}
+ 
+.book-title {
+	font-size: 1.18rem;
+	font-weight: 600;
+	margin-bottom: 0.25rem;
+	margin-top: 0.5rem;
+	color: var(--color-text, #222);
+	padding-right: 110px;
+	min-height: 2.4em;
+	word-break: break-word;
+}
+ 
+.book-author {
+	font-size: 1rem;
+	color: var(--color-accent, #666);
+	margin-bottom: 0.18rem;
+	padding-right: 110px;
+}
+ 
+.book-genre {
+	font-size: 0.95rem;
+	color: var(--color-secondary, #aaa);
+	margin-bottom: 0.3rem;
+	padding-right: 110px;
+}
+ 
+.book-price {
+	color: var(--color-success, #26734d);
+	font-weight: 500;
+	font-size: 1rem;
+	margin-bottom: 0.2rem;
+}
+ 
+.book-link {
+	text-decoration: none;
+	color: inherit;
+	display: block;
+}
+ 
+ /* Responsive */
+@media (max-width: 900px) {
+	.book-tile { 
+		width: 46%;
+	}
+
+	.book-image { 
+		width: 90px; 
+		height: 120px; 
+		right: -18px; 
+		top: -20px;
+	}
+
+	.book-title, 
+	.book-author, 
+	.book-genre { 
+		padding-right: 90px; 
+	}
+}
+
+@media (max-width: 600px) {
+	.book-tile { 
+		width: 100%; 
+	}
+
+	.book-image { 
+		width: 75px; 
+		height: 95px; 
+		right: -10px; 
+		top: -10px; 
+	}
+
+	.book-title, 
+	.book-author, 
+	.book-genre { 
+		padding-right: 78px; 
+	}
+}

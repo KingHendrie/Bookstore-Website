@@ -1,0 +1,62 @@
+<div class="container">
+	<section class="genres">
+		<h2 class="mb-3">Manage Genres</h2>
+		<div class="mb-3 d-flex">
+			<a class="btn" href="/admin">Back</a>
+			<a class="btn ms-1" href="#" id="addGenreBtn">Add New Genre</a>
+		</div>
+		<div class="genres-table mb-3">
+			<table class="table">
+				<thead>
+				<tr>
+					<th>Id</th>
+					<th>Genre</th>
+					<th>Icon</th>
+				</tr>
+				</thead>
+				<tbody id="genres-table-body">
+				<!-- Genre rows will be dynamically inserted here -->
+				</tbody>
+			</table>
+			<div id="genres-loading" class="text-center d-none">
+				<span class="spinner-border"></span> Loading genres...
+			</div>
+			<div id="genres-error" class="alert alert-danger mt-3 d-none">
+				Could not load genres.
+			</div>
+		</div>
+		<div class="mb-3 d-flex justify-content-between">
+			<button onclick="loadGenres(window.genrePage - 1)" id="prev-genre-btn" class="btn" disabled>Previous</button>
+			<span id="genre-page-info"></span>
+			<button onclick="loadGenres(window.genrePage + 1)" id="next-genre-btn" class="btn" disabled>Next</button>
+		</div>
+	</section>
+</div>
+ 
+<div id="addGenreModal" class="modal d-none">
+	<div class="modal-backdrop"></div>
+	<div class="modal-content">
+		<button class="modal-close" id="closeAddGenreModal" aria-label="Close">&times;</button>
+		<h3><span id="modalTitle">Add Genre</span></h3>
+		<form id="addGenreForm" class="input-form">
+			<input type="hidden" id="genreId" name="genreId">
+	
+			<label for="genre">Genre</label>
+			<input id="genre" name="genre" required>
+	
+			<label for="genre_icon">SVG Icon HTML</label>
+			<textarea id="genre_icon" name="genre_icon" rows="4" placeholder='<svg ...>...</svg>'></textarea>
+			<div id="genreIconPreview" style="margin-top:8px; min-height:32px;"></div>
+	
+			<div class="d-flex justify-content-between mt-3">
+				<button type="button" class="btn" id="cancelAddGenre">Cancel</button>
+				<button type="submit" class="btn" id="modalSubmitBtn">Save</button>
+			</div>
+			<div id="add-genre-error" class="alert alert-danger mt-3 d-none">
+				Could not save genre.
+			</div>
+		</form>
+	</div>
+</div>
+ 
+<script src="/wwwroot/js/admin/genres.js"></script>

@@ -106,6 +106,17 @@ const db = {
     }
   },
 
+  // Public Books
+  getCategories: async () => {
+    try {
+      const categories = await knex('genre').select('id', 'genre as name').orderBy('genre', 'asc');
+      return categories;
+    } catch (error) {
+      logger.error('Error fetching categories:', error);
+      throw error;
+    }
+  },
+
   // Admin Users
   getUsersPaginated: async (page = 1, pageSize = 10) => {
     try {
@@ -146,25 +157,70 @@ const db = {
     }
   },
 
+  // Admin Genres
+  getGenresPaginated: async (page = 1, pageSize = 10) => {
+    try {
+      const offset = (page - 1) * pageSize;
+      const genres = await knex('genre')
+        .select('id', 'genre as name', 'genre_icon')
+        .orderBy('genre', 'asc')
+        .limit(pageSize)
+        .offset(offset);
+  
+      const [{ count }] = await knex('genre').count('* as count');
+  
+      return {
+        genres,
+        total: Number(count),
+        page: Number(page),
+        pageSize: Number(pageSize),
+        totalPages: Math.ceil(Number(count) / pageSize)
+      };
+    } catch (error) {
+      logger.error('Error fetching paginated genres:', error);
+      throw error;
+    }
+  },
+
+  addGenre: async (genre, genre_icon) => {
+    try {
+      return await knex('genre').insert({ genre, genre_icon });
+    } catch (error) {
+      logger.error('Error adding genre:', error);
+      throw error;
+    }
+  },
+
+  updateGenre: async (id, genre, genre_icon) => {
+    try {
+      return await knex('genre').where({ id }).update({ genre, genre_icon });
+    } catch (error) {
+      logger.error('Error updating genre:', error);
+      throw error;
+    }
+  },
+
   // Admin Books
   getBooksPaginated: async (page = 1, pageSize = 10) => {
     try {
       const offset = (page - 1) * pageSize;
       const books = await knex('book')
-        .leftJoin('book_image', 'book.id', 'book_image.bookId')
-        .select(
-          'book.id',
-          'book.title',
-          'book.author',
-          'book.genre',
-          'book.isbn',
-          'book.publisher',
-          'book.price',
-          'book.stockQuantity',
-          'book_image.image_base64'
-        )
-        .limit(pageSize)
-        .offset(offset);
+      .leftJoin('book_image', 'book.id', 'book_image.bookId')
+      .leftJoin('genre', 'book.genreId', 'genre.id')
+      .select(
+        'book.id',
+        'book.title',
+        'book.author',
+        'book.genreId',
+        'genre.genre as genre',
+        'book.isbn',
+        'book.publisher',
+        'book.price',
+        'book.stockQuantity',
+        'book_image.image_base64'
+      )
+      .limit(pageSize)
+      .offset(offset);
 
       const [{ count }] = await knex('book').count('* as count');
 
@@ -181,19 +237,18 @@ const db = {
     }
   },
 
-  addBook: async (title, author, genre, isbn, publisher, description, price, stockQuantity) => {
+  addBook: async (title, author, genreId, isbn, publisher, description, price, stockQuantity) => {
     try {
       const newBook = {
         title,
         author,
-        genre,
+        genreId,
         isbn,
         publisher,
         description,
         price,
         stockQuantity
       };
-
       logger.info('Adding new book:', newBook);
       const result = await knex('book').insert(newBook);
       logger.info('Book added:', newBook);
@@ -204,9 +259,9 @@ const db = {
     }
   },
 
-  updateBook: async (id, { title, author, genre, isbn, publisher, description, price, stockQuantity }) => {
+  updateBook: async (id, { title, author, genreId, isbn, publisher, description, price, stockQuantity }) => {
     try {
-      const updatedData = { title, author, genre, isbn, publisher, description, price, stockQuantity };
+      const updatedData = { title, author, genreId, isbn, publisher, description, price, stockQuantity };
       const result = await knex('book')
         .where({ id })
         .update(updatedData);
