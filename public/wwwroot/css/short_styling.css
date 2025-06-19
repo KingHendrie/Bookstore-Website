@@ -2,11 +2,11 @@
   Utility Classes
 =========================*/
 .d-flex {
-	display: flex;
+	display: flex !important;
 }
 
 .d-none {
-	display: none;
+	display: none !important;
 }
 
 .justify-content-between {
@@ -23,4 +23,8 @@
 
 .text-center {
 	text-align: center;
+}
+
+.text-d-none {
+	text-decoration: none !important;
 }

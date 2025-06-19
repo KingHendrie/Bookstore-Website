@@ -3,7 +3,7 @@ class Book_Image {
 		this.tableName = 'book_image';
 		this.columns = [
 			{ name: 'bookId', type: 'foreign', references: 'book.id', onDelete: 'CASCADE' },
-			{ name: 'image_base64', type: 'text' }
+			{ name: 'image_base64', type: 'longtext' }
 		]
 	}
 }

@@ -1,4 +1,4 @@
-<div class="users-container">
+<div class="container">
 	<section class="users">
 		<h2 class="mb-3">Manage Users</h2>
 		<div class="mb-3 d-flex">
@@ -21,10 +21,10 @@
 					<!-- User rows will be dynamically inserted here -->
 				</tbody>
 			</table>
-			<div id="users-loading" class="text-center" style="display:none;">
+			<div id="users-loading" class="text-center d-none">
 				<span class="spinner-border"></span> Loading users...
 			</div>
-			<div id="users-error" class="alert alert-danger mt-3" style="display:none;">
+			<div id="users-error" class="alert alert-danger mt-3 d-none">
 				Could not load users.
 			</div>
 		</div>
@@ -56,26 +56,26 @@
 			<label for="password">Password</label>
 			<input id="password" name="password" type="password">
 
-			<div id="confirmPasswordGroup" style="display:none;">
+			<div id="confirmPasswordGroup" class="d-none">
 			<label for="confirmPassword">Confirm Password</label>
 			<input id="confirmPassword" name="confirmPassword" type="password">
 			</div>
 
 			<label for="role">Role</label>
 			<select id="role" name="role" required>
-				<option value="user">User</option>
-				<option value="admin">Admin</option>
+			<option value="user">User</option>
+			<option value="admin">Admin</option>
 			</select>
 
 			<div class="d-flex justify-content-between mt-3">
-				<button type="button" class="btn" id="cancelCreateUser">Cancel</button>
-				<button type="submit" class="btn" id="modalSubmitBtn">Create</button>
+			<button type="button" class="btn" id="cancelCreateUser">Cancel</button>
+			<button type="submit" class="btn" id="modalSubmitBtn">Create</button>
 			</div>
-			<div id="create-user-error" class="alert alert-danger mt-3" style="display:none;">
-				Could not create user.
+			<div id="create-user-error" class="alert alert-danger mt-3 d-none">
+			Could not create user.
 			</div>
 		</form>
 	</div>
 </div>
 
-<script src="/wwwroot/js/users.js"></script>
+<script src="/wwwroot/js/admin/users.js"></script>
