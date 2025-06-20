@@ -150,6 +150,74 @@ const db = {
     }
   },
 
+  getBooksFiltered: async ({ genre, search, page = 1, pageSize = 12 }) => {
+    try {
+      const query = knex('book')
+        .leftJoin('book_image', 'book.id', 'book_image.bookId')
+        .leftJoin('genre', 'book.genreId', 'genre.id')
+        .select(
+          'book.id',
+          'book.title',
+          'book.author',
+          'book.genreId',
+          'genre.genre as genre',
+          'book.isbn',
+          'book.publisher',
+          'book.description',
+          'book.price',
+          'book.stockQuantity',
+          'book_image.image_base64'
+        );
+
+      if (genre) query.where('genre.genre', genre);
+      if (search) {
+        query.where(function() {
+          this.where('book.title', 'like', `%${search}%`)
+            .orWhere('book.author', 'like', `%${search}%`)
+            .orWhere('book.isbn', 'like', `%${search}%`);
+        });
+      }
+
+      const offset = (page - 1) * pageSize;
+      query.offset(offset).limit(pageSize);
+  
+      const books = await query;
+
+      const countQuery = knex('book')
+        .leftJoin('genre', 'book.genreId', 'genre.id')
+        .count('* as count');
+      if (genre) countQuery.where('genre.genre', genre);
+      if (search) {
+        countQuery.where(function() {
+          this.where('book.title', 'like', `%${search}%`)
+            .orWhere('book.author', 'like', `%${search}%`)
+            .orWhere('book.isbn', 'like', `%${search}%`);
+        });
+      }
+      const [{ count }] = await countQuery;
+
+      books.forEach(book => {
+        if (book.image_base64) {
+          book.imageUrl = `data:image/png;base64,${book.image_base64}`;
+        } else {
+          book.imageUrl = null;
+        }
+        delete book.image_base64;
+      });
+
+      return {
+        books,
+        total: Number(count),
+        page: Number(page),
+        pageSize: Number(pageSize),
+        totalPages: Math.ceil(Number(count) / pageSize)
+      };
+    } catch (error) {
+      logger.error('Error fetching filtered books:', error);
+      throw error;
+    }
+  },
+
   // Admin Users
   getUsersPaginated: async (page = 1, pageSize = 10) => {
     try {

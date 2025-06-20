@@ -393,6 +393,32 @@ router.get('/public/books/:id', async (req, res) => {
 	}
 });
 
+router.get('/public/genres', async (req, res) => {
+	try {
+		const genres = await db.getCategories();
+		res.json(genres);
+	} catch (error) {
+		logger.error('Error fetching genres:', error);
+		res.status(500).json({ error: 'Failed to fetch genres.' });
+	}
+});
+
+router.get('/public/browse', async (req, res) => {
+	const { genre, search, page = 1, pageSize = 12 } = req.query;
+	try {
+		const data = await db.getBooksFiltered({
+			genre: genre || undefined,
+			search: search || undefined,
+			page: Number(page),
+			pageSize: Number(pageSize),
+		});
+		res.json(data);
+	} catch (error) {
+		logger.error('Error in /public/api/browse:', error);
+		res.status(500).json({ error: "Failed to fetch books." });
+	}
+});
+
 // Admin Users
 router.get('/admin/users', async (req, res) => {
 	const { page = 1, pageSize = 10 } = req.body;

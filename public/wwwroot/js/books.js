@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', async () => {
 	const params = new URLSearchParams(window.location.search);
 	const bookId = params.get('id');
-	if (!bookId) return;
+	if (!bookId) window.location.href = '/browse';
 	
 	const loading = document.getElementById('book-details-loading');
 	const errorDiv = document.getElementById('book-details-error');

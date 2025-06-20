@@ -37,6 +37,13 @@ async function loadBooksTiles() {
 			card.appendChild(author);
 			card.appendChild(genre);
 			card.appendChild(price);
+
+			if (book.stock_quantity === 0) {
+				const outOfStockBadge = document.createElement('span');
+				outOfStockBadge.className = 'badge-out-stock';
+				outOfStockBadge.textContent = 'Out of Stock';
+				price.appendChild(outOfStockBadge);
+			}
 	
 			const img = document.createElement('img');
 			img.className = 'book-image';

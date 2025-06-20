@@ -1,0 +1,24 @@
+<div class="browse-outer">
+	<div class="browse-toolbar">
+		<form id="browse-search-form" class="browse-form">
+			<div class="browse-input-wrap">
+				<span class="browse-search-icon">&#128269;</span>
+				<input type="text" id="searchInput" placeholder="Search books, authors, ISBN..." autocomplete="off">
+			</div>
+			<div class="browse-select-wrap">
+				<select id="genreFilter">
+					<option value="">All Genres</option>
+				</select>
+			</div>
+			<button type="submit" class="btn browse-search-btn">Search</button>
+		</form>
+	</div>
+	<div id="browse-books-list" class="browse-book-list"></div>
+	<div class="browse-pagination">
+		<button class="btn" id="prevPageBtn" disabled>&larr; Previous</button>
+		<span id="browsePageInfo"></span>
+		<button class="btn" id="nextPageBtn" disabled>Next &rarr;</button>
+	</div>
+</div>
+
+<script src="/wwwroot/js/browse.js"></script>
