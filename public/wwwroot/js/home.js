@@ -38,7 +38,7 @@ async function loadBooksTiles() {
 			card.appendChild(genre);
 			card.appendChild(price);
 
-			if (book.stock_quantity === 0) {
+			if (book.stockQuantity === 0) {
 				const outOfStockBadge = document.createElement('span');
 				outOfStockBadge.className = 'badge-out-stock';
 				outOfStockBadge.textContent = 'Out of Stock';
