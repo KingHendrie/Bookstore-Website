@@ -689,7 +689,7 @@ router.put('/admin/books/:id', async (req, res) => {
 });
 
 // Admin Reviews
-router.get('admin/reviews', async (req, res) => {
+router.get('/admin/reviews', async (req, res) => {
 	const { bookId } = req.query;
 	if (!bookId) return res.status(400).json({ error: "No bookId" });
 
