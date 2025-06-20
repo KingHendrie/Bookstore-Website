@@ -403,6 +403,42 @@ router.get('/public/genres', async (req, res) => {
 	}
 });
 
+// Public Spotlight
+router.get('/public/spotlight-books', async (req, res) => {
+	try {
+		const genres = await db.getSpotlightGenres();
+		if (!genres.length) return res.json([]);
+		const genreIds = genres.map(g => g.id);
+		const books = await db.getBooksByGenreIds(genreIds);
+
+		const booksWithImageUrl = books.map(book => ({
+			...book,
+			imageUrl: book.imageUrl // already present
+				|| (book.image_base64 ? `data:image/jpeg;base64,${book.image_base64}`
+				: book.image_path ? book.image_path
+				: null)
+		}));
+
+		res.json(booksWithImageUrl);
+	} catch (error) {
+		logger.error('Error fetching spotlight books:', error);
+		res.status(500).json({ error: "Failed to fetch spotlight books." });
+	}
+});
+
+router.get('/public/spotlight-books', async (req, res) => {
+	try {
+		const genres = await db.getSpotlightGenres();
+		if (!genres.length) return res.json([]);
+		const genreIds = genres.map(g => g.id);
+		const books = await db.getBooksByGenreIds(genreIds);
+		res.json(books);
+	} catch (error) {
+		logger.error('Error fetching spotlight books:', error);
+		res.status(500).json({ error: "Failed to fetch spotlight books." });
+	}
+});
+
 router.get('/public/browse', async (req, res) => {
 	const { genre, search, page = 1, pageSize = 12 } = req.query;
 	try {
@@ -476,10 +512,10 @@ router.get('/admin/genres', async (req, res) => {
 });
 
 router.post('/admin/genres/add', async (req, res) => {
-	const { genre, genre_icon } = req.body;
+	const { genre, genre_icon, spotlight } = req.body;
 	if (!genre) return res.status(400).json({ error: "Missing genre." });
 	try {
-		const [id] = await db.addGenre(genre, genre_icon);
+		const [id] = await db.addGenre(genre, genre_icon, !!spotlight);
 		res.json({ success: true, id });
 	} catch (error) {
 		logger.error('Error adding genre:', error);
@@ -489,10 +525,10 @@ router.post('/admin/genres/add', async (req, res) => {
 
 router.put('/admin/genres/:id', async (req, res) => {
 	const { id } = req.params;
-	const { genre, genre_icon } = req.body;
+	const { genre, genre_icon, spotlight } = req.body;
 	if (!genre) return res.status(400).json({ error: "Missing genre." });
 	try {
-		const updated = await db.updateGenre(id, genre, genre_icon);
+		const updated = await db.updateGenre(id, genre, genre_icon, !!spotlight);
 		res.json({ success: !!updated });
 	} catch (error) {
 		logger.error('Error updating genre:', error);

@@ -218,6 +218,54 @@ const db = {
     }
   },
 
+  // Public Spotlight
+  getSpotlightGenres: async () => {
+    try {
+      return await knex('genre')
+        .select('id', 'genre as name', 'genre_icon', 'spotlight')
+        .where('spotlight', true)
+        .orderBy('genre', 'asc');
+    } catch (error) {
+      logger.error('Error fetching spotlight genres:', error);
+      throw error;
+    }
+  },
+
+  getBooksByGenreIds: async (genreIds) => {
+    try {
+      if (!Array.isArray(genreIds) || genreIds.length === 0) {
+        return [];
+      }
+      const cleanIds = genreIds.filter(x => !!x).map(Number);
+      if (cleanIds.length === 0) {
+        return [];
+      }
+
+      const books = await knex('book')
+      .leftJoin('book_image', 'book.id', 'book_image.bookId')
+      .leftJoin('genre', 'book.genreId', 'genre.id')
+      .select(
+        'book.id',
+        'book.title',
+        'book.author',
+        'book.genreId',
+        'genre.genre as genre',
+        'book.isbn',
+        'book.publisher',
+        'book.description',
+        'book.price',
+        'book.stockQuantity',
+        'book_image.image_base64'
+      )
+      .whereIn('genreId', cleanIds)
+
+      return books;
+    } catch (error) {
+      logger.error('Error fetching books for spotlight genres:', error);
+      throw error;
+    }
+  },
+
   // Admin Users
   getUsersPaginated: async (page = 1, pageSize = 10) => {
     try {
@@ -263,7 +311,7 @@ const db = {
     try {
       const offset = (page - 1) * pageSize;
       const genres = await knex('genre')
-        .select('id', 'genre as name', 'genre_icon')
+        .select('id', 'genre as name', 'genre_icon', 'spotlight')
         .orderBy('genre', 'asc')
         .limit(pageSize)
         .offset(offset);
@@ -283,18 +331,18 @@ const db = {
     }
   },
 
-  addGenre: async (genre, genre_icon) => {
+  addGenre: async (genre, genre_icon, spotlight = false) => {
     try {
-      return await knex('genre').insert({ genre, genre_icon });
+      return await knex('genre').insert({ genre, genre_icon, spotlight });
     } catch (error) {
       logger.error('Error adding genre:', error);
       throw error;
     }
   },
 
-  updateGenre: async (id, genre, genre_icon) => {
+  updateGenre: async (id, genre, genre_icon, spotlight = false) => {
     try {
-      return await knex('genre').where({ id }).update({ genre, genre_icon });
+      return await knex('genre').where({ id }).update({ genre, genre_icon, spotlight });
     } catch (error) {
       logger.error('Error updating genre:', error);
       throw error;

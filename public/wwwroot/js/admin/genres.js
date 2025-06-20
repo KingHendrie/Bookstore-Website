@@ -18,10 +18,11 @@ function openAddGenreModal() {
 		modalId: 'addGenreModal',
 		title: 'Add Genre',
 		submitText: 'Add',
-		fields: { genreId: '', genre: '', genre_icon: '' },
+		fields: { genreId: '', genre: '', genre_icon: '', spotlight: false },
 		errorDivId: 'add-genre-error',
 		resetForm: true
 	});
+	document.getElementById('spotlight').checked = false;
 	updateGenreIconPreview();
 	Modal.open('addGenreModal');
 }
@@ -31,10 +32,11 @@ function openEditGenreModal(genre) {
 		modalId: 'addGenreModal',
 		title: 'Edit Genre',
 		submitText: 'Update',
-		fields: { genreId: genre.id, genre: genre.name, genre_icon: genre.genre_icon || '' },
+		fields: { genreId: genre.id, genre: genre.name, genre_icon: genre.genre_icon || '', spotlight: genre.spotlight || false },
 		errorDivId: 'add-genre-error'
 	});
 	document.getElementById('genre_icon').value = genre.genre_icon || '';
+	document.getElementById('spotlight').checked = !!genre.spotlight;
 	updateGenreIconPreview();
 	Modal.open('addGenreModal');
 }
@@ -50,7 +52,8 @@ Modal.bindFormSubmit('addGenreForm', (form) => {
 		method: genreId ? 'PUT' : 'POST',
 		data: {
 			genre: form.genre.value.trim(),
-			genre_icon: form.genre_icon.value.trim()
+			genre_icon: form.genre_icon.value.trim(),
+			spotlight: form.spotlight.checked
 		}
 	};
 }, () => {
@@ -78,6 +81,7 @@ async function loadGenres(page = 1, pageSize = 10) {
 			row.innerHTML = `
 				<td>${genre.id}</td>
 				<td>${genre.name}</td>
+				<td>${genre.spotlight ? '<span title="Spotlight">Yes</span>' : ''}</td>
 				<td>
 					<span class="genre-icon-cell">${genre.genre_icon ? genre.genre_icon : ''}</span>
 				</td>
