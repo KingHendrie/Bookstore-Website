@@ -91,6 +91,75 @@ html, body {
 }
 
 /*=========================
+  Book
+=========================*/
+.book-details-container {
+   max-width: 800px;
+   margin: 40px auto 0 auto;
+   padding: 24px;
+   background: var(--color-tertiary, #fff);
+   border-radius: 14px;
+   box-shadow: 0 4px 24px rgba(0,0,0,0.09);
+}
+
+.book-details-card {
+   display: flex;
+   gap: 2rem;
+   align-items: flex-start;
+   background: transparent;
+   border-radius: 14px;
+   overflow: hidden;
+   padding: 0;
+}
+
+.book-image-wrap {
+   background: #fafafa;
+   border-radius: 10px;
+   overflow: hidden;
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   min-width: 180px;
+   min-height: 260px;
+}
+
+.book-details-image {
+   max-width: 200px;
+   max-height: 300px;
+   object-fit: contain;
+}
+
+.book-info {
+   flex: 1;
+}
+
+.book-title {
+   font-size: 2rem;
+   margin-bottom: 0.6em;
+   color: var(--color-accent);
+}
+
+.book-author, 
+.book-genre, 
+.book-isbn, 
+.book-publisher, 
+.book-description, 
+.book-price {
+   margin-bottom: 0.5em;
+}
+
+.badge.badge-out-stock {
+   display: inline-block;
+   background: #e55;
+   color: #fff;
+   padding: 0.4em 1em;
+   border-radius: 18px;
+   font-weight: bold;
+   font-size: 1rem;
+   margin-top: 1em;
+}
+
+/*=========================
   Footer
 =========================*/
 footer {
@@ -135,6 +204,17 @@ footer {
 
    .container {
       padding: 4px 2px;
+   }
+
+   .book-details-card {
+      flex-direction: column;
+      padding: 0;
+      gap: 1rem;
+   }
+   
+   .book-image-wrap {
+      align-items: flex-start;
+      justify-content: flex-start;
    }
 
    footer {

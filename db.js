@@ -117,6 +117,39 @@ const db = {
     }
   },
 
+  getBookById: async (id) => {
+    try {
+      const book = await knex('book')
+        .leftJoin('book_image', 'book.id', 'book_image.bookId')
+        .leftJoin('genre', 'book.genreId', 'genre.id')
+        .select(
+          'book.id',
+          'book.title',
+          'book.author',
+          'genre.genre as genre',
+          'book.isbn',
+          'book.publisher',
+          'book.description',
+          'book.price',
+          'book.stockQuantity',
+          'book_image.image_base64'
+        )
+        .where('book.id', id)
+        .first();
+  
+      if (book && book.image_base64) {
+        book.imageUrl = `data:image/png;base64,${book.image_base64}`;
+      } else {
+        book.imageUrl = null;
+      }
+      if (book) delete book.image_base64;
+      return book;
+    } catch (error) {
+      logger.error('Error fetching book by id:', error);
+      throw error;
+    }
+  },
+
   // Admin Users
   getUsersPaginated: async (page = 1, pageSize = 10) => {
     try {
@@ -215,6 +248,7 @@ const db = {
         'genre.genre as genre',
         'book.isbn',
         'book.publisher',
+        'book.description',
         'book.price',
         'book.stockQuantity',
         'book_image.image_base64'

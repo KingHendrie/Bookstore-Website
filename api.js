@@ -358,6 +358,41 @@ router.get('/categories', async (req, res) => {
 	}
 });
 
+router.get('/books/browse', async (req, res) => {
+	const id = req.query.id;
+	if (!id) return res.status(404).render('404');
+	try {
+		const book = await db.getBookById(id);
+		if (!book) {
+			logger.error(`Book with id ${id} not found`);
+			return res.status(404).render('404');
+		}
+
+		res.render('books', { bookId: id });
+	} catch (error) {
+		logger.error('Error rendering book page:', error);
+		res.status(500).render('404');
+	}
+});
+
+router.get('/books/browse/:id', async (req, res) => {
+	const { id } = req.params;
+	if (!id) return res.status(400).json({ error: "Missing book id" });
+
+	try {
+		const book = await db.getBookById(id);
+		if (!book) {
+			logger.error(`Book with id ${id} not found`);
+			return res.status(404).json({ error: "Book not found" });
+		}
+
+		res.json(book);
+	} catch (error) {
+		logger.error('Error fetching book:', error);
+		res.status(500).json({ error: "Failed to fetch book." });
+	}
+});
+
 // Admin Users
 router.get('/users', async (req, res) => {
 	const { page = 1, pageSize = 10 } = req.body;
@@ -502,7 +537,7 @@ router.put('/books/:id', async (req, res) => {
 	const { id } = req.params;
 	const { title, author, genreId, isbn, publisher, description, price, stockQuantity, image_base64 } = req.body;
 
-	if (!title || !author || !genreId || !isbn || !publisher || !description || !price || !stockQuantity) {
+	if (!title || !author || !genreId || !isbn || !publisher || isNaN(price) || isNaN(stockQuantity)) {
 		logger.warn('Book update attempt with missing fields');
 		return res.status(400).json({ error: "Missing required fields." });
 	}
