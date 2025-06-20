@@ -14,14 +14,14 @@ async function loadReviews() {
 	bookInfo.innerHTML = '';
 
 	try {
-		const bookRes = await fetch(`/api/books/browse/${bookId}`);
+		const bookRes = await fetch(`/api/public/books/${bookId}`);
 		let book = null;
 		if (bookRes.ok) {
 			book = await bookRes.json();
 			bookInfo.innerHTML = `<h4>${book.title} <small>by ${book.author}</small></h4>`;
 		}
 	
-		const res = await fetch(`/api/reviews?bookId=${bookId}`);
+		const res = await fetch(`/api/admin/reviews?bookId=${bookId}`);
 		if (!res.ok) throw new Error('Network error');
 		const data = await res.json();
  
@@ -49,7 +49,7 @@ async function loadReviews() {
 
 async function deleteReview(reviewId, bookId) {
 	if (!confirm('Delete this review?')) return;
-	const res = await fetch(`/api/reviews/${reviewId}`, { method: 'DELETE' });
+	const res = await fetch(`/api/admin/reviews/${reviewId}`, { method: 'DELETE' });
 	if (res.ok) {
 		loadReviews();
 	} else {

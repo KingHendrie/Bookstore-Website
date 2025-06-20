@@ -46,7 +46,7 @@ document.getElementById('closeAddGenreModal').addEventListener('click', () => Mo
 Modal.bindFormSubmit('addGenreForm', (form) => {
 	const genreId = form.genreId.value;
 	return {
-		url: genreId ? `/api/genres/${genreId}` : `/api/genres/add`,
+		url: genreId ? `/api/admin/genres/${genreId}` : `/api/admin/genres/add`,
 		method: genreId ? 'PUT' : 'POST',
 		data: {
 			genre: form.genre.value.trim(),
@@ -66,7 +66,7 @@ async function loadGenres(page = 1, pageSize = 10) {
 	if (error) error.style.display = 'none';
 
 	try {
-		const res = await fetch(`/api/genres?page=${page}&pageSize=${pageSize}`);
+		const res = await fetch(`/api/admin/genres?page=${page}&pageSize=${pageSize}`);
 		const data = await res.json();
 		const tbody = document.getElementById('genres-table-body');
 		tbody.innerHTML = '';

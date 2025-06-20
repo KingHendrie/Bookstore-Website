@@ -30,7 +30,7 @@ async function loginUser() {
 	const email = document.getElementById('email').value;
 	const password = document.getElementById('password').value;
 
-	const response = await fetch('/api/login', {
+	const response = await fetch('/api/user/login', {
 		method: 'POST',
 		headers: { 'Content-Type': 'application/json' },
 		body: JSON.stringify({ email, password })
@@ -52,7 +52,7 @@ async function loginUser() {
 
 Modal.bindFormSubmit('twoFAForm', (form) => {
 	return {
-		url: '/api/verify-2fa',
+		url: '/api/2fa/verify-2fa',
 		method: 'POST',
 		data: { code: form.twoFACode.value }
 	};
@@ -70,7 +70,7 @@ Modal.bindFormSubmit('twoFAForm', (form) => {
 }, 'twoFA-error');
 
 async function singOut() {
-	const response = await fetch('/api/logout', {
+	const response = await fetch('/api/user/logout', {
 		method: 'POST',
 		headers: { 'Content-Type': 'application/json' }
 	});

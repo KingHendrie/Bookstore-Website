@@ -2,7 +2,7 @@ async function loadBooksTiles() {
 	const booksList = document.getElementById('books-list');
 	booksList.innerHTML = '<div>Loading...</div>';
 	try {
-		const res = await fetch('/api/home-books?limit=8');
+		const res = await fetch('/api/public/home-books?limit=8');
 		const books = await res.json();
 		if (!books.length) {
 			booksList.innerHTML = '<div>No books found.</div>';
@@ -65,7 +65,7 @@ async function loadGenreTiles() {
 	const categoriesList = document.getElementById('categories-list');
 	categoriesList.innerHTML = '<div>Loading...</div>';
 	try {
-		const res = await fetch('/api/genres?page=1&pageSize=100');
+		const res = await fetch('/api/admin/genres?page=1&pageSize=100');
 		const data = await res.json();
 		const genres = data.genres || data;
 		if (!genres.length) {

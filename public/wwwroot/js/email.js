@@ -13,7 +13,7 @@ async function sendEmailFromFrontend() {
 		</html>
 	`;
 
-	const response = await fetch('/api/send-contact', {
+	const response = await fetch('/api/email/send-contact', {
 		method: 'POST',
 		headers: { 'Content-Type': 'application/json' },
 		body: JSON.stringify({

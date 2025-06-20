@@ -31,7 +31,7 @@ window.openEditUserModal = function(user) {
 Modal.bindFormSubmit('createUserForm', (form) => {
 	const userId = form.userId.value;
 	return {
-		url: userId ? `/api/users/${userId}` : '/api/register',
+		url: userId ? `/api/admin/users/${userId}` : '/api/user/register',
 		method: userId ? 'PUT' : 'POST',
 		data: {
 		firstName: form.firstName.value.trim(),
@@ -54,7 +54,7 @@ async function loadUsers(page = 1, pageSize = 10) {
 	if (error) error.style.display = 'none';
 
 	try {
-		const res = await fetch(`/api/users?page=${page}&pageSize=${pageSize}`);
+		const res = await fetch(`/api/admin/users?page=${page}&pageSize=${pageSize}`);
 		if (!res.ok) throw new Error('Network error');
 		const data = await res.json();
 		const tbody = document.getElementById('users-table-body');

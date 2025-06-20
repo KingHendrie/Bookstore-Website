@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 	}
 
 	try {
-		const res = await fetch(`/api/books/browse/${bookId}`);
+		const res = await fetch(`/api/public/books/${bookId}`);
 		if (!res.ok) {
 			if (res.status === 404) window.location.href = '/404';
 			else showError();

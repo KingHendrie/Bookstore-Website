@@ -16,7 +16,7 @@ router.use(express.json({ limit: '5mb' }));
 router.use(express.urlencoded({ limit: '5mb', extended: true }));
 
 // Emails
-router.post('/send-email', async (req, res) => {
+router.post('/email/send-email', async (req, res) => {
 	const { to, subject, text, html } = req.body;
 
 	if (!to || !subject || !(text || html)) {
@@ -41,7 +41,7 @@ router.post('/send-email', async (req, res) => {
 	}
 });
 
-router.post('/send-contact', async (req, res) => {
+router.post('/email/send-contact', async (req, res) => {
 	const { to, subject, text, html } = req.body;
 
 	if (!to || !subject || !(text || html)) {
@@ -73,7 +73,7 @@ router.post('/send-contact', async (req, res) => {
 });
 
 // 2FA Routes
-router.post('/verify-2fa', async (req, res) => {
+router.post('/2fa/verify-2fa', async (req, res) => {
 	const { code } = req.body;
 	const pending = req.session.pending2FA;
 
@@ -114,7 +114,7 @@ router.post('/verify-2fa', async (req, res) => {
 });
 
 // User Registration
-router.post('/register', async (req, res) => {
+router.post('/user/register', async (req, res) => {
 	const { firstName, lastName, email, password, role = 'user' } = req.body;
 
 	if (!firstName || !lastName || !email || !password) {
@@ -157,7 +157,7 @@ router.post('/register', async (req, res) => {
 });
 
 // User Stuff
-router.post('/login', async (req, res) => {
+router.post('/user/login', async (req, res) => {
 	const { email, password } = req.body;
 
 	if (!email || !password) {
@@ -209,7 +209,7 @@ router.post('/login', async (req, res) => {
 	}
 });
 
-router.post('/logout', async (req, res) => {
+router.post('/user/logout', async (req, res) => {
 	req.session.destroy(err => {
 		if (err) {
 			logger.error('Error destroying session:', err);
@@ -222,7 +222,7 @@ router.post('/logout', async (req, res) => {
 	});
 });
 
-router.get('/profile', async (req, res) => {
+router.get('/user/profile', async (req, res) => {
 	if (!req.session.user) {
 	  return res.status(401).json({ error: "Not authenticated." });
 	}
@@ -244,7 +244,7 @@ router.get('/profile', async (req, res) => {
 	}
 });
 
-router.patch('/profile/2fa', async (req, res) => {
+router.patch('/user/profile/2fa', async (req, res) => {
 	if (!req.session.user) {
 		return res.status(401).json({ error: "Not authenticated." });
 	}
@@ -267,7 +267,7 @@ router.patch('/profile/2fa', async (req, res) => {
 	}
 });
 
-router.post('/profile/password/request', async (req, res) => {
+router.post('/user/profile/password/request', async (req, res) => {
 	if (!req.session.user) {
 		logger.warn('Password change request without authentication');
 		return res.status(401).json({ error: "Not authenticated." });
@@ -299,7 +299,7 @@ router.post('/profile/password/request', async (req, res) => {
 	}
 });
 
-router.put('/profile/password', async (req, res) => {
+router.put('/user/profile/password', async (req, res) => {
 	const { code, newPassword } = req.body;
 
 	if (!req.session.user) {
@@ -337,7 +337,7 @@ router.put('/profile/password', async (req, res) => {
 });
 
 // Public Books
-router.get('/home-books', async (req, res) => {
+router.get('/public/home-books', async (req, res) => {
 	try {
 		const limit = parseInt(req.query.limit, 10) || 8;
 		const books = await db.getBooksPaginated(1, limit);
@@ -348,7 +348,7 @@ router.get('/home-books', async (req, res) => {
 	}
 });
  
-router.get('/categories', async (req, res) => {
+router.get('/public/categories', async (req, res) => {
 	try {
 		const categories = await db.getCategories();
 		res.json(categories);
@@ -358,7 +358,7 @@ router.get('/categories', async (req, res) => {
 	}
 });
 
-router.get('/books/browse', async (req, res) => {
+router.get('/public/books', async (req, res) => {
 	const id = req.query.id;
 	if (!id) return res.status(404).render('404');
 	try {
@@ -375,7 +375,7 @@ router.get('/books/browse', async (req, res) => {
 	}
 });
 
-router.get('/books/browse/:id', async (req, res) => {
+router.get('/public/books/:id', async (req, res) => {
 	const { id } = req.params;
 	if (!id) return res.status(400).json({ error: "Missing book id" });
 
@@ -394,7 +394,7 @@ router.get('/books/browse/:id', async (req, res) => {
 });
 
 // Admin Users
-router.get('/users', async (req, res) => {
+router.get('/admin/users', async (req, res) => {
 	const { page = 1, pageSize = 10 } = req.body;
 
 	try {
@@ -406,7 +406,7 @@ router.get('/users', async (req, res) => {
 	}
 });
 
-router.put('/users/:id', async (req, res) => {
+router.put('/admin/users/:id', async (req, res) => {
 	const { id } = req.params;
 	const { firstName, lastName, email, password, role } = req.body;
 
@@ -438,7 +438,7 @@ router.put('/users/:id', async (req, res) => {
 });
 
 // Admin Genres
-router.get('/genres', async (req, res) => {
+router.get('/admin/genres', async (req, res) => {
 	const { page = 1, pageSize = 10 } = req.query;
 	try {
 		const result = await db.getGenresPaginated(page, pageSize);
@@ -449,7 +449,7 @@ router.get('/genres', async (req, res) => {
 	}
 });
 
-router.post('/genres/add', async (req, res) => {
+router.post('/admin/genres/add', async (req, res) => {
 	const { genre, genre_icon } = req.body;
 	if (!genre) return res.status(400).json({ error: "Missing genre." });
 	try {
@@ -461,7 +461,7 @@ router.post('/genres/add', async (req, res) => {
 	}
 });
 
-router.put('/genres/:id', async (req, res) => {
+router.put('/admin/genres/:id', async (req, res) => {
 	const { id } = req.params;
 	const { genre, genre_icon } = req.body;
 	if (!genre) return res.status(400).json({ error: "Missing genre." });
@@ -475,7 +475,7 @@ router.put('/genres/:id', async (req, res) => {
 });
 
 // Admin Books
-router.get('/books', async (req, res) => {
+router.get('/admin/books', async (req, res) => {
 	const { page = 1, pageSize = 10 } = req.query;
 
 	try {
@@ -487,7 +487,7 @@ router.get('/books', async (req, res) => {
 	}
 });
 
-router.post('/books/add', async (req, res) => {
+router.post('/admin/books/add', async (req, res) => {
 	const { title, author, genreId, isbn, publisher, description, price, stockQuantity, image_base64 } = req.body;
 
 	if (!title || !author || !genreId || !isbn || !publisher || !price || !stockQuantity) {
@@ -533,7 +533,7 @@ router.post('/books/add', async (req, res) => {
 	}
 });
 
-router.put('/books/:id', async (req, res) => {
+router.put('/admin/books/:id', async (req, res) => {
 	const { id } = req.params;
 	const { title, author, genreId, isbn, publisher, description, price, stockQuantity, image_base64 } = req.body;
 
@@ -590,7 +590,7 @@ router.put('/books/:id', async (req, res) => {
 });
 
 // Admin Reviews
-router.get('/reviews', async (req, res) => {
+router.get('admin/reviews', async (req, res) => {
 	const { bookId } = req.query;
 	if (!bookId) return res.status(400).json({ error: "No bookId" });
 
@@ -603,7 +603,7 @@ router.get('/reviews', async (req, res) => {
 	}
 });
  
-router.delete('/reviews/:id', async (req, res) => {
+router.delete('/admin/reviews/:id', async (req, res) => {
 	const { id } = req.params;
 	try {
 		await db.deleteReview(id);

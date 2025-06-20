@@ -1,7 +1,7 @@
 Modal.bind('addBookModal', { closeOnBackdrop: true, closeOnEscape: true });
 
 async function populateGenreSelect(selectedId = null) {
-	const res = await fetch('/api/categories');
+	const res = await fetch('/api/public/categories');
 	const genres = await res.json();
 	const select = document.getElementById('genreId');
 	select.innerHTML = genres.map(g =>
@@ -77,7 +77,7 @@ document.getElementById('bookImage').addEventListener('change', function() {
 Modal.bindFormSubmit('addBookForm', (form) => {
 	const bookId = form.bookId.value;
 	return {
-		url: bookId ? `/api/books/${bookId}` : `/api/books/add`,
+		url: bookId ? `/api/admin/books/${bookId}` : `/api/admin/books/add`,
 		method: bookId ? 'PUT' : 'POST',
 		data: {
 			title: form.title.value.trim(),
@@ -104,10 +104,9 @@ async function loadBooks(page = 1, pageSize = 10) {
 	if (error) error.style.display = 'none';
 
 	try {
-		const res = await fetch(`/api/books?page=${page}&pageSize=${pageSize}`);
+		const res = await fetch(`/api/admin/books?page=${page}&pageSize=${pageSize}`);
 		if (!res.ok) throw new Error('Network error');
 		const data = await res.json();
-		console.log(data);
 		const tbody = document.getElementById('books-table-body');
 		tbody.innerHTML = '';
 		if (data.books.length === 0) {

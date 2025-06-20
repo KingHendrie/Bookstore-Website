@@ -1,6 +1,6 @@
 async function populateProfile() {
 	try {
-		const res = await fetch('/api/profile');
+		const res = await fetch('/api/user/profile');
 		if (!res.ok) throw new Error('Could not fetch user info');
 		const user = await res.json();
 		document.getElementById('profileFirstName').value = user.firstName || '';
@@ -40,7 +40,7 @@ document.getElementById('profileInfoForm').addEventListener('submit', async func
 	};
 
 	try {
-		const res = await fetch('/api/profile', {
+		const res = await fetch('/api/user/profile', {
 			method: 'PUT',
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify(data)
@@ -86,7 +86,7 @@ document.getElementById('password2FAForm').addEventListener('submit', async func
 	const newPassword = document.getElementById('password2FAModal').dataset.newPassword;
 
 	try {
-		const res = await fetch('/api/profile/password', {
+		const res = await fetch('/api/user/profile/password', {
 		method: 'PUT',
 		headers: { 'Content-Type': 'application/json' },
 		body: JSON.stringify({ code, newPassword })
@@ -123,7 +123,7 @@ document.getElementById('profilePasswordForm').addEventListener('submit', async 
 	}
 
 	try {
-		const reqRes = await fetch('/api/profile/password/request', { method: 'POST' });
+		const reqRes = await fetch('/api/user/profile/password/request', { method: 'POST' });
 		const reqJson = await reqRes.json();
 		if(!reqJson.success) {
 			showToast(reqJson.error || 'Could not start password reset. ' + reqJson.error, 'error');
@@ -138,7 +138,7 @@ document.getElementById('profilePasswordForm').addEventListener('submit', async 
 
 async function verifyPasswordChange(code, newPassword) {
 	try {
-		const res = await fetch('/api/profile/password', {
+		const res = await fetch('/api/user/profile/password', {
 			method: 'PUT',
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify({ code, newPassword })
@@ -158,7 +158,7 @@ async function verifyPasswordChange(code, newPassword) {
 
 async function enable2FA() {
 	try {
-		const res = await fetch('/api/profile/2fa', {
+		const res = await fetch('/api/user/profile/2fa', {
 			method: 'PATCH',
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify({ enabled: true })
@@ -177,7 +177,7 @@ async function enable2FA() {
  
 async function disable2FA() {
 	try {
-		const res = await fetch('/api/profile/2fa', {
+		const res = await fetch('/api/user/profile/2fa', {
 			method: 'PATCH',
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify({ enabled: false })
@@ -195,7 +195,7 @@ async function disable2FA() {
 }
 
 async function signOut() {
-	const response = await fetch('/api/logout', {
+	const response = await fetch('/api/user/logout', {
 		method: 'POST',
 		headers: { 'Content-Type': 'application/json' }
 	});
