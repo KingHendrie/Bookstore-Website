@@ -5,9 +5,62 @@
 	<div id="book-details-error" class="alert alert-danger d-none">
 		Could not load book details.
 	</div>
+
 	<section id="book-details" class="book-details d-none">
 		<!-- JS will inject book details here -->
 	</section>
+
+	<section id="book-reviews" class="book-reviews-section d-none">
+		<div id="reviews-summary"></div>
+		<div id="reviews-list"></div>
+		<div id="leave-review-btn-wrap" class="mt-3"></div>
+	</section>
+
+	<div id="leaveReviewModal" class="modal d-none">
+		<div class="modal-backdrop"></div>
+		<div class="modal-content">
+			<button class="modal-close" id="closeLeaveReviewModal" aria-label="Close">&times;</button>
+			<h3><span id="modalTitle">Leave a Review</span></h3>
+			<form id="leaveReviewForm" class="input-form">
+				<input type="hidden" id="reviewBookId" name="bookId">
+				<label for="reviewRating">Rating (1-5)</label>
+				<select id="reviewRating" name="rating" required>
+					<option value="">Select rating</option>
+					<option value="5">5 - Excellent</option>
+					<option value="4">4 - Good</option>
+					<option value="3">3 - Average</option>
+					<option value="2">2 - Poor</option>
+					<option value="1">1 - Terrible</option>
+				</select>
+				<label for="reviewComment">Comment</label>
+				<textarea id="reviewComment" name="comment" rows="4" maxlength="1000" required></textarea>
+				<div class="d-flex justify-content-between mt-3">
+					<button type="button" class="btn" id="cancelLeaveReview">Cancel</button>
+					<button type="submit" class="btn" id="modalSubmitBtn">Submit Review</button>
+				</div>
+				<div id="leave-review-error" class="alert alert-danger mt-3 d-none"></div>
+			</form>
+		</div>
+	</div>
+</div>
+
+<div id="loginModal" class="modal d-none">
+	<div class="modal-backdrop"></div>
+	<div class="modal-content">
+		<button class="modal-close" id="closeLoginModal" aria-label="Close">&times;</button>
+		<h3><span id="loginModalTitle">Login</span></h3>
+		<form id="loginForm" class="input-form">
+			<label for="email">Email</label>
+			<input type="text" id="email" name="email" required autocomplete="email">
+			<label for="loginPassword">Password</label>
+			<input type="password" id="loginPassword" name="password" required autocomplete="current-password">
+			<div class="d-flex justify-content-between mt-3">
+				<button type="button" class="btn" id="cancelLogin">Cancel</button>
+				<button type="submit" class="btn" id="modalLoginBtn">Login</button>
+			</div>
+			<div id="login-error" class="alert alert-danger mt-3 d-none"></div>
+		</form>
+	</div>
 </div>
 
 <script src="/wwwroot/js/books.js"></script>

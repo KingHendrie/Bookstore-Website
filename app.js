@@ -52,6 +52,7 @@ async function renderWithLayout(res, page, options = {}) {
   // Set isAdmin based on session
   const user = res.req.session?.user;
   options.isAdmin = user?.role === 'admin';
+  options.isLoggedIn = !!user;
 
   // Protect specific paths (e.g., /profile and /admin)
   const protectedPaths = ['/profile', '/admin'];

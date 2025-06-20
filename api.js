@@ -336,6 +336,14 @@ router.put('/user/profile/password', async (req, res) => {
 	}
 });
 
+router.get('/user/status', (req, res) => {
+	if (req.session && req.session.user) {
+		res.json({ loggedIn: true });
+	} else {
+		res.json({ loggedIn: false });
+	}
+});
+
 // Public Books
 router.get('/public/home-books', async (req, res) => {
 	try {
@@ -400,6 +408,35 @@ router.get('/public/genres', async (req, res) => {
 	} catch (error) {
 		logger.error('Error fetching genres:', error);
 		res.status(500).json({ error: 'Failed to fetch genres.' });
+	}
+});
+
+router.get('/public/books/:bookId/reviews', async (req, res) => {
+	const { bookId } = req.params;
+	try {
+		const reviews = await db.getReviewsForBook(bookId);
+		const count = reviews.length;
+		const avgRating = count ? reviews.reduce((sum, r) => sum + r.rating, 0) / count : 0;
+		res.json({ reviews, avgRating, count });
+	} catch (error) {
+		console.error(error);
+		res.status(500).json({ error: "Failed to fetch reviews." });
+	}
+});
+
+router.post('/user/books/:bookId/reviews', async (req, res) => {
+	if (!req.session || !req.session.user) {
+		return res.status(403).json({ error: "You must be logged in to leave a review." });
+	}
+	const { bookId } = req.params;
+	const { rating, comment } = req.body;
+	const userId = req.session.user.id;
+	try {
+		await db.addReview({ userId, bookId, rating, comment });
+		res.json({ success: true });
+	} catch (error) {
+		console.error(error);
+		res.status(500).json({ error: "Failed to submit review." });
 	}
 });
 

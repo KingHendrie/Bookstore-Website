@@ -218,6 +218,24 @@ const db = {
     }
   },
 
+  getReviewsForBook: async (bookId) => {
+    return await knex('review')
+      .join('user', 'review.userId', 'user.id')
+      .where({ bookId })
+      .orderBy('datePosted', 'desc')
+      .select('review.*', 'user.firstName');
+  },
+
+  addReview: async ({ userId, bookId, rating, comment }) => {
+    return await knex('review').insert({
+      userId,
+      bookId,
+      rating,
+      comment,
+      datePosted: knex.fn.now()
+    });
+  },
+
   // Public Spotlight
   getSpotlightGenres: async () => {
     try {
