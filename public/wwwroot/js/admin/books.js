@@ -82,7 +82,7 @@ Modal.bindFormSubmit('addBookForm', (form) => {
 		data: {
 			title: form.title.value.trim(),
 			author: form.author.value.trim(),
-			genre: form.genreId.value,
+			genreId: form.genreId.value,
 			isbn: form.isbn.value.trim(),
 			publisher: form.publisher.value.trim(),
 			description: form.description.value.trim(),

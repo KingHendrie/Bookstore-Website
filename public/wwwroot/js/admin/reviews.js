@@ -12,9 +12,9 @@ async function loadReviews() {
 	reviewsError.classList.add('d-none');
 	tbody.innerHTML = '';
 	bookInfo.innerHTML = '';
- 
+
 	try {
-		const bookRes = await fetch(`/api/books/${bookId}`);
+		const bookRes = await fetch(`/api/books/browse/${bookId}`);
 		let book = null;
 		if (bookRes.ok) {
 			book = await bookRes.json();
@@ -46,7 +46,7 @@ async function loadReviews() {
 		reviewsError.classList.remove('d-none');
 	}
 }
- 
+
 async function deleteReview(reviewId, bookId) {
 	if (!confirm('Delete this review?')) return;
 	const res = await fetch(`/api/reviews/${reviewId}`, { method: 'DELETE' });
