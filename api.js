@@ -492,6 +492,79 @@ router.get('/public/browse', async (req, res) => {
 	}
 });
 
+// Public Cart
+router.get('/cart', async (req, res) => {
+	if (!req.session || !req.session.user) {
+		return res.status(401).json({ error: "Not authenticated" });
+	}
+	const userId = req.session.user.id;
+	try {
+		const items = await db.getCart(userId);
+		res.json({ items });
+	} catch (error) {
+		logger.error('Error fetching cart:', error);
+		res.status(500).json({ error: "Failed to fetch cart." });
+	}
+});
+
+router.post('/cart/add', async (req, res) => {
+	if (!req.session || !req.session.user) {
+		return res.status(401).json({ error: "Not authenticated" });
+	}
+	const userId = req.session.user.id;
+	const { bookId, quantity = 1 } = req.body;
+	if (!bookId) return res.status(400).json({ error: "Missing bookId" });
+	try {
+		await db.addToCart(userId, bookId, quantity);
+		res.json({ success: true });
+	} catch (error) {
+		logger.error(`Error adding to cart for user ${userId}: ${error}`);
+		logger.error('Error adding to cart:', error);
+		res.status(500).json({ error: "Failed to add to cart." });
+	}
+});
+
+router.post('/cart/update', async (req, res) => {
+	const userId = req.session.user.id;
+	const { bookId, quantity } = req.body;
+
+	if (!userId) return res.status(401).json({ error: "Unauthorized" });
+	if (!bookId || !Number.isInteger(quantity) || quantity < 1) {
+		return res.status(400).json({ error: "Invalid payload" });
+	}
+
+	const book = await db.getBookById(bookId);
+	if (!book) return res.status(404).json({ error: "Book not found" });
+
+	if (quantity > book.stockQuantity) {
+		return res.status(400).json({ error: "Not enough stock" });
+	}
+
+	const updated = await db.updateCartItem(userId, bookId, quantity);
+
+	if (!updated) {
+		return res.status(404).json({ error: "Item not in cart" });
+	}
+
+	return res.json({ success: true });
+});
+
+router.post('/cart/remove', async (req, res) => {
+	if (!req.session || !req.session.user) {
+		return res.status(401).json({ error: "Not authenticated" });
+	}
+	const userId = req.session.user.id;
+	const { bookId } = req.body;
+	if (!bookId) return res.status(400).json({ error: "Missing bookId" });
+	try {
+		await db.removeFromCart(userId, bookId);
+		res.json({ success: true });
+	} catch (error) {
+		logger.error('Error removing from cart:', error);
+		res.status(500).json({ error: "Failed to remove from cart." });
+	}
+});
+
 // Admin Users
 router.get('/admin/users', async (req, res) => {
 	const { page = 1, pageSize = 10 } = req.body;

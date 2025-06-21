@@ -284,6 +284,86 @@ const db = {
     }
   },
 
+  // Public Cart
+  getOrCreateCartId: async (userId) => {
+    let cart = await knex('shopping_cart').where({ userId }).first();
+    if (!cart) {
+      const [cartId] = await knex('shopping_cart').insert({ userId }).returning('id');
+      return cartId.id || cartId;
+    }
+    return cart.id;
+  },
+
+  getCart: async (userId) => {
+    const cart = await knex('shopping_cart').where({ userId }).first();
+    if (!cart) return [];
+    const items = await knex('shopping_cart_items')
+      .join('book', 'shopping_cart_items.bookId', 'book.id')
+      .join('book_image', 'book.id', 'book_image.bookId')
+      .select(
+        'shopping_cart_items.bookId',
+        'shopping_cart_items.quantity',
+        'book.title',
+        'book.author',
+        'book.price',
+        'book.stockQuantity',
+        'book_image.image_base64'
+      )
+      .where({ shoppingCartId: cart.id });
+    return items;
+  },
+
+  addToCart: async (userId, bookId, quantity = 1) => {
+    const cartId = await db.getOrCreateCartId(userId);
+    const existing = await knex('shopping_cart_items')
+      .where({ shoppingCartId: cartId, bookId })
+      .first();
+    if (existing) {
+      await knex('shopping_cart_items')
+        .where({ shoppingCartId: cartId, bookId })
+        .update({ quantity: existing.quantity + quantity });
+    } else {
+      await knex('shopping_cart_items')
+        .insert({ shoppingCartId: cartId, bookId, quantity });
+    }
+    return true;
+  },
+
+  updateCartItem: async (userId, bookId, quantity) => {
+    const cart = await knex('shopping_cart').where({ userId }).first();
+    if (!cart) return false;
+  
+    const book = await knex('book').where({ id: bookId }).first();
+    if (!book) throw new Error('Book not found');
+    if (quantity > book.stockQuantity) throw new Error('Not enough stock');
+  
+    const item = await knex('shopping_cart_items')
+      .where({ shoppingCartId: cart.id, bookId })
+      .first();
+  
+    if (!item) return false;
+  
+    if (quantity < 1) {
+      const deletedRows = await knex('shopping_cart_items')
+        .where({ shoppingCartId: cart.id, bookId })
+        .del();
+      return deletedRows > 0;
+    } else {
+      const updatedRows = await knex('shopping_cart_items')
+        .where({ shoppingCartId: cart.id, bookId })
+        .update({ quantity });
+      return updatedRows > 0;
+    }
+  },
+
+  removeFromCart: async (userId, bookId) => {
+    const cartId = await db.getOrCreateCartId(userId);
+    await knex('shopping_cart_items')
+      .where({ shoppingCartId: cartId, bookId })
+      .del();
+    return true;
+  },
+
   // Admin Users
   getUsersPaginated: async (page = 1, pageSize = 10) => {
     try {

@@ -86,6 +86,23 @@ Modal.bindFormSubmit('leaveReviewForm', (form) => {
 	loadReviews(bookId, window.currentUser);
 }, 'leave-review-error');
 
+async function updateCartFab() {
+	try {
+		const res = await fetch('/api/cart');
+		if (res.ok) {
+			const { items } = await res.json();
+			const cartCount = document.getElementById('cart-count');
+			const count = items.reduce((sum, item) => sum + item.quantity, 0);
+			cartCount.textContent = count;
+			cartCount.style.display = count > 0 ? 'flex' : 'none';
+		} else {
+			document.getElementById('cart-count').style.display = 'none';
+		}
+	} catch {
+		document.getElementById('cart-count').style.display = 'none';
+	}
+}
+
 function openLoginModal(onSuccess) {
 	Modal.setupFormModal({
 		modalId: 'loginModal',
@@ -113,9 +130,37 @@ function openLoginModal(onSuccess) {
 		Modal.close('loginModal');
 		Modal.toast("Login successful!", "success");
 		if (typeof onSuccess === "function") {
-		onSuccess();
+			onSuccess();
 		}
 	}, 'login-error');
+}
+
+function createAddToCartBtn(book) {
+	const btn = document.createElement('button');
+	btn.className = 'btn btn-primary add-to-cart-btn';
+	btn.textContent = 'Add to Cart';
+	btn.onclick = async function (e) {
+		e.preventDefault();
+		try {
+			const res = await fetch('/api/cart/add', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ bookId: book.id, quantity: 1 })
+			});
+			if (res.ok) {
+				showToast('Added to cart!', 'success');
+				updateCartFab();
+			} else if (res.status === 401 || res.status === 403) {
+				openLoginModal();
+			} else {
+				const data = await res.json();
+				showToast(data.error || "Could not add to cart.", "error");
+			}
+		} catch {
+			showToast("Could not add to cart.", "error");
+		}
+	};
+	return btn;
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -173,7 +218,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 						${
 							book.stockQuantity === 0
 							? `<span class="badge badge-out-stock" style="background:#e55;color:#fff;padding:0.4em 1em;border-radius:18px;font-weight:bold;font-size:1rem;display:inline-block;margin-top:1em;">Out of Stock</span>`
-							: ''
+							: `<div id="book-add-to-cart-btn-holder"></div>`
 						}
 				</div>
 				<button class="btn btn-primary"
@@ -183,6 +228,14 @@ document.addEventListener('DOMContentLoaded', async () => {
 				</button>
 			</div>
 		`;
+
+		// Add to Cart Button (only if in stock)
+		if (book.stockQuantity > 0) {
+			const cartBtnHolder = document.getElementById('book-add-to-cart-btn-holder');
+			if (cartBtnHolder) {
+				cartBtnHolder.appendChild(createAddToCartBtn(book));
+			}
+		}
 
 		const leaveReviewBtn = document.getElementById('leaveReviewBtn');
 		if (leaveReviewBtn) {
@@ -200,6 +253,31 @@ document.addEventListener('DOMContentLoaded', async () => {
 			};
 		}
 		loadReviews(bookId, user);
+		updateCartFab();
+
+		// Cart FAB click logic
+		const cartFab = document.getElementById('cart-fab');
+		if (cartFab) {
+			cartFab.onclick = async function () {
+				try {
+					const res = await fetch('/api/cart');
+					if (res.ok) {
+						const { items } = await res.json();
+						if (!items || !items.length) {
+							showToast("Your cart is empty.", "info");
+						} else {
+							window.location.href = "/cart";
+						}
+					} else if (res.status === 401 || res.status === 403) {
+						openLoginModal();
+					} else {
+						showToast("You need to be logged in to view your cart.", "error");
+					}
+				} catch {
+					showToast("Could not load cart.", "error");
+				}
+			};
+		}
 
 	} catch (err) {
 		showError();

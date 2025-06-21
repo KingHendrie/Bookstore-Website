@@ -11,4 +11,24 @@
 	<button type="submit">Send Email</button>
 </form>
 
+<div id="loginModal" class="modal d-none">
+	<div class="modal-backdrop"></div>
+	<div class="modal-content">
+		<button class="modal-close" id="closeLoginModal" aria-label="Close">&times;</button>
+		<h3><span id="loginModalTitle">Login</span></h3>
+		<form id="loginForm" class="input-form">
+			<label for="email">Email</label>
+			<input type="text" id="email" name="email" required autocomplete="email">
+			<label for="loginPassword">Password</label>
+			<input type="password" id="loginPassword" name="password" required autocomplete="current-password">
+			<div class="d-flex justify-content-between mt-3">
+				<button type="button" class="btn" id="cancelLogin">Cancel</button>
+				<button type="submit" class="btn" id="modalLoginBtn">Login</button>
+			</div>
+			<div id="login-error" class="alert alert-danger mt-3 d-none"></div>
+		</form>
+	</div>
+</div>
+
+<script src="/wwwroot/js/contact.js"></script>
 <script src="/wwwroot/js/email.js"></script>
