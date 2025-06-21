@@ -662,7 +662,7 @@ router.get('/admin/books', async (req, res) => {
 router.post('/admin/books/add', async (req, res) => {
 	const { title, author, genreId, isbn, publisher, description, price, stockQuantity, image_base64 } = req.body;
 
-	if (!title || !author || !genreId || !isbn || !publisher || !price || !stockQuantity) {
+	if (!title || !author || !genreId || !isbn || !publisher || isNaN(price) || isNaN(stockQuantity)) {
 		logger.warn('Book add attempt with missing fields');
 		return res.status(400).json({ error: "Missing required fields." });
 	}
