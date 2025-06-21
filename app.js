@@ -13,9 +13,9 @@ const app = express();
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 app.use(express.static('public'));
-app.use(cookieParser(process.env.APP_Secret));
+app.use(cookieParser(process.env.APP_SECRET));
 app.use(session({
-  secret: process.env.APP_Secret,
+  secret: process.env.APP_SECRET,
   resave: false,
   saveUninitialized: false,
   cookie: { secure: false } // Set secure: true if using HTTPS
